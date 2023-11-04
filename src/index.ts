@@ -10,14 +10,10 @@ import authentication from './middlewares/authentication'
 const PORT = process.env.PORT || 3000
 const app = express()
 
-// // JSON Parser Middleware
-// app.use(express.json())
-
 // console.log('----------', process.env.ACESS_CONTROL_ALLOW_ORIGIN, process.env.NODE_ENV)
 // // Temp middlewares
 
 // app.set('trust proxy', 1)
-app.use(cookieParser() as any)
 
 // const corsConfig = {
 //   origin: process.env.ACESS_CONTROL_ALLOW_ORIGIN,
@@ -38,6 +34,8 @@ app.use(cookieParser() as any)
 //   next()
 // })
 
+app.use(cookieParser() as any)
+app.use(express.json())
 app.use(logger)
 app.use(authentication)
 

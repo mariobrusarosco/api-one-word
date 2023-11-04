@@ -1,14 +1,13 @@
 import { Request, Response } from 'express'
 import { GlobalErrorMapper } from '../../shared/error-handling/mapper'
 import { ErrorMapper } from '../error-handling/mapper'
+import { v4 as uuidV4 } from 'uuid'
 
-import League, { ILeague } from '../schema'
 import db from '../../../services/database'
-import { Prisma } from '@prisma/client'
+import { Prisma, TableRole } from '@prisma/client'
+import { getUserCookie } from '../../../domains/shared/utils/getUserCookie'
 
-async function getAllTables(req: Request, res: Response) {
-  // const token = req.headers.token
-
+async function getAllTables(_: Request, res: Response) {
   try {
     const results = await db.table.findMany({
       include: { profiles: { include: { member: true } }, channels: true }
@@ -22,45 +21,38 @@ async function getAllTables(req: Request, res: Response) {
   }
 }
 
-// async function getLeague(req: Request, res: Response) {
-//   const leagueId = req?.params.leagueId
-
-//   try {
-//     const league = await League.findOne(
-//       { _id: leagueId },
-//       {
-//         __v: 0
-//       }
-//     )
-
-//     return res.status(200).send(league)
-//   } catch (error: any) {
-//     if (error?.value === 'NULL') {
-//       return res.status(ErrorMapper.NOT_FOUND.status).send(ErrorMapper.NOT_FOUND.status)
-//     } else {
-//       // log here: ErrorMapper.BIG_FIVE_HUNDRED.debug
-//       res
-//         .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
-//         .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.user)
-//     }
-//   }
-// }
-
 async function createTable(req: Request, res: Response) {
-  const body = req?.body as Prisma.TableCreateInput
-
-  if (!body.name) {
-    return res
-      .status(400)
-      .json({ message: 'You must provide a label to update a league' })
-  }
-
   try {
-    const result = await League.create({
-      ...body
+    const body = req?.body as Prisma.TableCreateInput
+
+    console.log(req.body)
+
+    if (!body?.name) {
+      return res
+        .status(400)
+        .json({ message: 'You must provide a name to create a table' })
+    }
+
+    const fakeAuth = getUserCookie(req)
+    const newTable = await db.table.create({
+      data: {
+        name: body.name,
+        inviteCode: uuidV4(),
+        profiles: {
+          create: {
+            memberId: fakeAuth,
+            role: TableRole.ADMIN
+          }
+        },
+        channels: {
+          create: {
+            name: 'general'
+          }
+        }
+      }
     })
 
-    res.json(result)
+    res.json(newTable)
   } catch (error: any) {
     if (error?.value === 'NULL') {
       return res.status(ErrorMapper.NOT_FOUND.status).send(ErrorMapper.NOT_FOUND.status)
@@ -69,10 +61,27 @@ async function createTable(req: Request, res: Response) {
       // log here: ErrorMapper.BIG_FIVE_HUNDRED.debug
       res
         .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
-        .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.user)
+        .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.debug)
     }
   }
 }
+
+// async function getTable(req: Request, res: Response) {
+//   const leagueId = req?.params.leagueId
+
+//   try {
+//     return res.status(200).send({})
+//   } catch (error: any) {
+//     if (error?.value === 'NULL') {
+//       return res.status(ErrorMapper.NOT_FOUND.status).send(ErrorMapper.NOT_FOUND.status)
+//     } else {
+//       // log here: ErrorMapper.BIG_FIVE_HUNDRED.debug
+//       res
+//         .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
+//         .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.userMessage)
+//     }
+//   }
+// }
 
 // async function updateLeague(req: Request, res: Response) {
 //   const body = req?.body as ILeague
