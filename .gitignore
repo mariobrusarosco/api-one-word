@@ -1,0 +1,21 @@
+# Folders
+node_modules
+build
+
+# Files
+error.log
+combined.log
+exceptions.log
+crash.log
+
+.env
+npm-debug.log
+yarn-error.log
+
+.vscode
+
+cypress/screenshots
+cypress/videos
+
+
+.env

@@ -1,0 +1,101 @@
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Member {
+  id           String         @id @default(uuid())
+  userId       String         @unique
+  firstName    String
+  lastName     String
+  email        String         @db.Text
+  TableProfile TableProfile[]
+  messages Message[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+}
+
+enum TableRole {
+  ADMIN
+  MODERATOR
+  GUEST
+}
+
+model TableProfile {
+  id   String    @unique @default(uuid())
+  role TableRole @default(GUEST)
+
+  memberId String
+  member   Member @relation(fields: [memberId], references: [userId], onDelete: Cascade)
+
+  tableId String
+  table   Table  @relation(fields: [tableId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+
+  @@index([memberId])
+  @@index([tableId])
+}
+
+model Table {
+  id         String @id @default(uuid())
+  name       String
+  inviteCode String @unique
+
+  profiles TableProfile[]
+  channels Channel[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+}
+
+model Channel {
+  id   String @id @default(uuid())
+  name String
+
+  tableId String
+  table   Table  @relation(fields: [tableId], references: [id], onDelete: Cascade)
+
+  messages Message[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+
+  @@index([tableId])
+}
+
+
+enum MessageType {
+  CHANNEL
+  DIRECT
+}
+
+model Message {
+  id   String @id @default(uuid())
+
+  type MessageType @default(CHANNEL)
+  content String @db.Text
+
+  channelId String
+  channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  memberId String
+  member Member @relation(fields: [memberId], references: [userId], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([channelId])
+  @@index([memberId])
+}
