@@ -66,22 +66,26 @@ async function createTable(req: Request, res: Response) {
   }
 }
 
-// async function getTable(req: Request, res: Response) {
-//   const leagueId = req?.params.leagueId
+async function getTable(req: Request, res: Response) {
+  const tableId = req?.params.tableId
 
-//   try {
-//     return res.status(200).send({})
-//   } catch (error: any) {
-//     if (error?.value === 'NULL') {
-//       return res.status(ErrorMapper.NOT_FOUND.status).send(ErrorMapper.NOT_FOUND.status)
-//     } else {
-//       // log here: ErrorMapper.BIG_FIVE_HUNDRED.debug
-//       res
-//         .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
-//         .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.userMessage)
-//     }
-//   }
-// }
+  try {
+    const result = await db.table.findUnique({
+      where: { id: tableId }
+    })
+
+    return res.status(200).send(result)
+  } catch (error: any) {
+    if (error?.value === 'NULL') {
+      return res.status(ErrorMapper.NOT_FOUND.status).send(ErrorMapper.NOT_FOUND.status)
+    } else {
+      // log here: ErrorMapper.BIG_FIVE_HUNDRED.debug
+      res
+        .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
+        .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.userMessage)
+    }
+  }
+}
 
 // async function updateLeague(req: Request, res: Response) {
 //   const body = req?.body as ILeague
@@ -109,6 +113,7 @@ async function createTable(req: Request, res: Response) {
 
 const TableController = {
   getAllTables,
+  getTable,
   createTable
 }
 
