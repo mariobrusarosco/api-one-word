@@ -25,8 +25,6 @@ async function createTable(req: Request, res: Response) {
   try {
     const body = req?.body as Prisma.TableCreateInput
 
-    console.log(req.body)
-
     if (!body?.name) {
       return res
         .status(400)
@@ -76,45 +74,42 @@ async function getTable(req: Request, res: Response) {
 
     return res.status(200).send(result)
   } catch (error: any) {
-    if (error?.value === 'NULL') {
-      return res.status(ErrorMapper.NOT_FOUND.status).send(ErrorMapper.NOT_FOUND.status)
-    } else {
-      // log here: ErrorMapper.BIG_FIVE_HUNDRED.debug
-      res
-        .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
-        .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.userMessage)
-    }
+    // log here: ErrorMapper.BIG_FIVE_HUNDRED.debug
+    res
+      .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
+      .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.userMessage)
   }
 }
 
-// async function updateLeague(req: Request, res: Response) {
-//   const body = req?.body as ILeague
-//   const leagueId = req?.params?.leagueId
+async function updateTable(req: Request, res: Response) {
+  try {
+    const body = req?.body as Prisma.TableUpdateInput
+    const tableNewName = body?.name
 
-//   if (!body.label) {
-//     return res.status(400).json(ErrorMapper.MISSING_LABEL)
-//   }
+    if (!tableNewName) {
+      return res.status(400).json(ErrorMapper.MISSING_NAME)
+    }
 
-//   console.log({ body })
+    const tableId = req?.params.tableId
 
-//   try {
-//     const result = await League.findOneAndUpdate({ _id: leagueId }, body, {
-//       returnDocument: 'after'
-//     })
+    const result = await db.table.update({
+      where: { id: tableId },
+      data: { name: tableNewName }
+    })
 
-//     res.json(result)
-//   } catch (error) {
-//     console.error(error)
-//     return res
-//       .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
-//       .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.user)
-//   }
-// }
+    res.status(200).json(result)
+  } catch (error) {
+    return res
+      .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
+      .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.userMessage)
+  }
+}
 
 const TableController = {
   getAllTables,
   getTable,
-  createTable
+  createTable,
+  updateTable
 }
 
 export default TableController

@@ -8,7 +8,7 @@ const TableRouting = (app: Express) => {
   tableRouter.post('/', TableController.createTable)
   tableRouter.get('/', TableController.getAllTables)
   tableRouter.get('/:tableId', TableController.getTable)
-  // tableRouter.patch('/:leagueId', LeagueController.updateLeague)
+  tableRouter.patch('/:tableId', TableController.updateTable)
 
   app.use(`${process.env.API_VERSION}/tables`, tableRouter)
 }
