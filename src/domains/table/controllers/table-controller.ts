@@ -105,11 +105,30 @@ async function updateTable(req: Request, res: Response) {
   }
 }
 
+async function updateTableInvite(req: Request, res: Response) {
+  try {
+    const tableId = req?.params.tableId
+
+    const table = await db.table.update({
+      where: { id: tableId },
+      data: { inviteCode: uuidV4() }
+    })
+
+    res.json(table.inviteCode)
+  } catch (error: any) {
+    // log here: ErrorMapper.BIG_FIVE_HUNDRED.debug
+    res
+      .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
+      .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.debug)
+  }
+}
+
 const TableController = {
   getAllTables,
   getTable,
   createTable,
-  updateTable
+  updateTable,
+  updateTableInvite
 }
 
 export default TableController
