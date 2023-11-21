@@ -8,6 +8,11 @@ export const ErrorMapper = {
     debug: 'duplicated key: name',
     userMessage: 'This channel already exists. Please, try another name'
   },
+  MISSING_CHANNEL_ID: {
+    status: 400,
+    debug: 'missing key: channel',
+    userMessage: 'Ops! You need to provide a valid channel id to remove it.'
+  },
   MISSING_NAME: {
     status: 400,
     debug: 'missing key: name',

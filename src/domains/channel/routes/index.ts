@@ -6,7 +6,7 @@ const TournamentRouting = (app: Express) => {
   const channelRouter = express.Router()
 
   channelRouter.post('/', ChannelController.createChannel)
-  channelRouter.delete('/channelId', ChannelController.deleteChannel)
+  channelRouter.delete('/:channelId', ChannelController.deleteChannel)
 
   app.use(`${process.env.API_VERSION}/channels`, channelRouter)
 }

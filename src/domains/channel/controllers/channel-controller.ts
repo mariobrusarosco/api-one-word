@@ -120,37 +120,34 @@ async function createChannel(req: Request, res: Response) {
 }
 
 async function deleteChannel(req: Request, res: Response) {
-  const body = req?.body as Prisma.ChannelCreateInput & { tableId: string }
+  const channeld = req?.params.channelId
 
-  if (!body.name) {
-    return res.status(400).json({ message: ErrorMapper.MISSING_NAME })
-  }
-
-  if (!body.tableId) {
-    return res.status(400).json({ message: ErrorMapper.MISSING_TABLE_ID })
+  if (!channeld) {
+    return res.status(ErrorMapper.MISSING_CHANNEL_ID.status).json({
+      message: ErrorMapper.MISSING_CHANNEL_ID
+    })
   }
 
   try {
-    const existingChannel = await db.channel.findFirst({
+    const existingChannel = await db.channel.findUnique({
       where: {
-        name: body.name
+        id: channeld
       }
     })
 
-    if (existingChannel) {
+    if (!existingChannel) {
       return res
-        .status(ErrorMapper.DUPLICATED_NAME.status)
-        .send(ErrorMapper.DUPLICATED_NAME.userMessage)
+        .status(ErrorMapper.NOT_FOUND.status)
+        .send(ErrorMapper.NOT_FOUND.userMessage)
     }
 
-    const newChannel = await db.channel.create({
-      data: {
-        name: body.name,
-        tableId: body.tableId
+    await db.channel.delete({
+      where: {
+        id: channeld
       }
     })
 
-    return res.json(newChannel)
+    return res.json('ok')
   } catch (error) {
     return res
       .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
