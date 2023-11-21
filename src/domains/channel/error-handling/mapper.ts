@@ -21,7 +21,7 @@ export const ErrorMapper = {
   MISSING_TABLE_ID: {
     status: 400,
     debug: 'missing key: tableId',
-    userMessage: 'Ops! We could not identify some table`s info to create this channel.'
+    userMessage: 'Ops! We could not identify the necessary data to work on this channel.'
   },
   NOT_FOUND: {
     status: 404,

@@ -1,84 +1,8 @@
 import { Request, Response } from 'express'
 import { GlobalErrorMapper } from '../../shared/error-handling/mapper'
 import { ErrorMapper } from '../error-handling/mapper'
-
 import db from '../../../services/database'
-import Match from '../../match/schema'
-import { handleInternalServerErrorResponse } from '../../shared/error-handling/httpResponsesHelper'
 import { Prisma } from '@prisma/client'
-import { getUserCookie } from '../../../domains/shared/utils/getUserCookie'
-
-// async function getTournamentMatches(req: Request, res: Response) {
-//   const tournamentId = req?.params.tournamentId
-
-//   try {
-//     await Tournament.findOne(
-//       { _id: tournamentId },
-//       {
-//         __v: 0
-//       }
-//     )
-
-//     const allRelatedMatches = await Match.find({ tournamentId })
-
-//     return res.status(200).send(allRelatedMatches)
-//   } catch (error: any) {
-//     if (error?.kind === 'ObjectId') {
-//       return res
-//         .status(ErrorMapper.NOT_FOUND.status)
-//         .send(ErrorMapper.NOT_FOUND.userMessage)
-//     } else {
-//       console.error(error)
-//       return res
-//         .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
-//         .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.userMessage)
-//     }
-//   }
-// }
-
-// async function getAllTournaments(req: Request, res: Response) {
-//   try {
-//     const allTournaments = await Tournament.find(
-//       {},
-//       {
-//         __v: 0
-//       }
-//     )
-//     return res.status(200).send(allTournaments)
-//   } catch (error: any) {
-//     if (error?.kind === 'ObjectId') {
-//       return res
-//         .status(ErrorMapper.NOT_FOUND.status)
-//         .send(ErrorMapper.NOT_FOUND.userMessage)
-//     } else {
-//       console.error(error)
-//       return res
-//         .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
-//         .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.userMessage)
-//     }
-//   }
-// }
-
-// async function getTournament(req: Request, res: Response) {
-//   const tournamentId = req?.params.tournamentId
-
-//   try {
-//     const tournament = await Tournament.findOne(
-//       { _id: tournamentId },
-//       {
-//         __v: 0
-//       }
-//     )
-
-//     return res.status(200).send(tournament)
-//   } catch (error: any) {
-//     if (error?.kind === 'ObjectId') {
-//       return res.status(ErrorMapper.NOT_FOUND.status).send(ErrorMapper.NOT_FOUND.status)
-//     } else {
-//       return handleInternalServerErrorResponse(res, error)
-//     }
-//   }
-// }
 
 async function createChannel(req: Request, res: Response) {
   const body = req?.body as Prisma.ChannelCreateInput & { tableId: string }
@@ -123,9 +47,9 @@ async function deleteChannel(req: Request, res: Response) {
   const channeld = req?.params.channelId
 
   if (!channeld) {
-    return res.status(ErrorMapper.MISSING_CHANNEL_ID.status).json({
-      message: ErrorMapper.MISSING_CHANNEL_ID
-    })
+    return res
+      .status(ErrorMapper.MISSING_CHANNEL_ID.status)
+      .json(ErrorMapper.MISSING_CHANNEL_ID)
   }
 
   try {
@@ -155,9 +79,40 @@ async function deleteChannel(req: Request, res: Response) {
   }
 }
 
+async function updateChannel(req: Request, res: Response) {
+  const channeld = req?.params.channelId
+  if (!channeld) {
+    return res
+      .status(ErrorMapper.MISSING_CHANNEL_ID.status)
+      .json(ErrorMapper.MISSING_CHANNEL_ID.userMessage)
+  }
+
+  const { tableId, name } = req?.body as Prisma.ChannelUpdateInput & { tableId: string }
+
+  if (!tableId) {
+    return res
+      .status(ErrorMapper.MISSING_TABLE_ID.status)
+      .json(ErrorMapper.MISSING_TABLE_ID.userMessage)
+  }
+
+  try {
+    const result = await db.channel.update({
+      where: { id: channeld },
+      data: { name: name }
+    })
+
+    return res.json(result)
+  } catch (error) {
+    return res
+      .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
+      .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.userMessage)
+  }
+}
+
 const ChannelController = {
   createChannel,
-  deleteChannel
+  deleteChannel,
+  updateChannel
 }
 
 export default ChannelController
