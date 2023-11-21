@@ -2,6 +2,7 @@ import express from 'express'
 import cookieParser from 'cookie-parser'
 
 import TableRouting from './domains/table/routes'
+import ChannelRouting from './domains/channel/routes'
 
 import logger from './middlewares/logger'
 import authentication from './middlewares/authentication'
@@ -41,7 +42,7 @@ app.use(authentication)
 
 // Rest routes - temporary place
 TableRouting(app)
-// LeagueRouting(app)
+ChannelRouting(app)
 // UserRouting(app)
 // MatchRouting(app)
 // AuthRouting(app)
