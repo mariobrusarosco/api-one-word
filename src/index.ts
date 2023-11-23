@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser'
 
 import TableRouting from './domains/table/routes'
 import ChannelRouting from './domains/channel/routes'
+import MessageRouting from './domains/message/routes'
 
 import logger from './middlewares/logger'
 import authentication from './middlewares/authentication'
@@ -43,15 +44,10 @@ app.use(authentication)
 // Rest routes - temporary place
 TableRouting(app)
 ChannelRouting(app)
+MessageRouting(app)
 // UserRouting(app)
-// MatchRouting(app)
 // AuthRouting(app)
 // Rest routes - temporary place'
-
-// Playground Area
-// FileRouting(app)
-// ServingWebsites(app)
-// TemplateEngines(app)
 
 async function startServer() {
   app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
