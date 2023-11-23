@@ -50,9 +50,10 @@ MessageRouting(app)
 // Rest routes - temporary place'
 
 async function startServer() {
-  app.listen(PORT, () =>
-    console.log(`Listening on port ${PORT} ${process.env.API_VERSION}/tables`)
-  )
+  app.listen(PORT, () => {
+    console.log(`Lis!!!!!tening on port ${PORT} ${process.env.API_VERSION}/tables`)
+    console.log('complicado', `${process.env.API_VERSION}/tables`, process.env)
+  })
 }
 
 startServer()
