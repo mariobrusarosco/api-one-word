@@ -13,7 +13,6 @@ const TableRouting = (app: Express) => {
   tableRouter.post('/join/:inviteCode', TableController.joinTable)
   tableRouter.patch('/:tableId/profile', TableController.updateProfile)
 
-  console.log('test ------', `${process.env.API_VERSION}/tables`)
   app.use(`${process.env.API_VERSION}/tables`, tableRouter)
 }
 
