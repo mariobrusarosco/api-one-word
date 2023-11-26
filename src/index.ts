@@ -52,7 +52,7 @@ MessageRouting(app)
 async function startServer() {
   app.listen(PORT, () => {
     console.log(`Lis!!!!!tening on port ${PORT} ${process.env.API_VERSION}/tables`)
-    console.log('complicado', `${process.env.API_VERSION}/tables`, process.env)
+    console.log('complicado', `${process.env.API_VERSION}`)
   })
 }
 

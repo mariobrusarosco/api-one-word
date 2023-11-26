@@ -4,7 +4,7 @@
   "description": "API - One Word",
   "main": "index.js",
   "scripts": {
-    "build": "rimraf ./dist && tsc",
+    "build": "rimraf ./dist && yarn generate-schema && tsc",
     "dev": "nodemon -r dotenv/config ./src/index.ts",
     "serve-prod": "node -r dotenv/config ./dist/src/index.js",
     "compile": "tsc --noEmit",
