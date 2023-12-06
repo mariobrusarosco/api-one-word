@@ -8,20 +8,19 @@ import MessageRouting from './domains/message/routes'
 import logger from './middlewares/logger'
 import authentication from './middlewares/authentication'
 
-// const cors = require('cors')
+const cors = require('cors')
 const PORT = process.env.PORT || 3000
 const app = express()
 
-// console.log('----------', process.env.ACESS_CONTROL_ALLOW_ORIGIN, process.env.NODE_ENV)
 // // Temp middlewares
 
 // app.set('trust proxy', 1)
 
-// const corsConfig = {
-//   origin: process.env.ACESS_CONTROL_ALLOW_ORIGIN,
-//   credentials: true
-// }
-// app.use(cors(corsConfig))
+const corsConfig = {
+  origin: process.env.ACESS_CONTROL_ALLOW_ORIGIN,
+  credentials: true
+}
+app.use(cors(corsConfig))
 // app.options('*', cors(corsConfig))
 
 // app.use(function (req, res, next) {
@@ -53,6 +52,7 @@ async function startServer() {
   app.listen(PORT, () => {
     console.log(`Lis!!!!!tening on port ${PORT} ${process.env.API_VERSION}/tables`)
     console.log('complicado', `${process.env.API_VERSION}`)
+    console.log('----------', process.env.ACESS_CONTROL_ALLOW_ORIGIN)
   })
 }
 
