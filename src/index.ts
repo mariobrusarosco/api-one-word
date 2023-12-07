@@ -7,14 +7,35 @@ import MessageRouting from './domains/message/routes'
 
 import logger from './middlewares/logger'
 import authentication from './middlewares/authentication'
+import * as Sentry from '@sentry/node'
+import { ProfilingIntegration } from '@sentry/profiling-node'
 
 const cors = require('cors')
 const PORT = process.env.PORT || 3000
 const app = express()
 
-// // Temp middlewares
+console.log('process.env.SENTRY_DSN', process.env.SENTRY_DSN)
 
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [
+    // enable HTTP calls tracing
+    new Sentry.Integrations.Http({ tracing: true }),
+    // enable Express.js middleware tracing
+    new Sentry.Integrations.Express({ app }),
+    new ProfilingIntegration()
+  ],
+  // Performance Monitoring
+  tracesSampleRate: 1.0,
+  // Set sampling rate for profiling - this is relative to tracesSampleRate
+  profilesSampleRate: 1.0
+})
+
+// The request handler must be the first middleware on the app
+app.use(Sentry.Handlers.requestHandler())
 // app.set('trust proxy', 1)
+// TracingHandler creates a trace for every incoming request
+app.use(Sentry.Handlers.tracingHandler())
 
 const corsConfig = {
   origin: true,
@@ -39,19 +60,30 @@ app.use(cookieParser() as any)
 app.use(express.json())
 app.use(logger)
 
-// Rest routes - temporary place
-TableRouting(app)
+app.use(`${process.env.API_VERSION}/tables`, TableRouting())
 ChannelRouting(app)
 MessageRouting(app)
 // UserRouting(app)
 // AuthRouting(app)
-// Rest routes - temporary place'
+
+app.get('/debug-sentry', function mainHandler(req, res) {
+  throw new Error('My first Sentry error!')
+})
+
+app.use(Sentry.Handlers.errorHandler())
+
+// Optional fallthrough error handler
+// app.use(function onError(err, req, res: any) {
+//   // The error id is attached to `res.sentry` to be returned
+//   // and optionally displayed to the user for support.
+//   res.statusCode = 500
+//   res.end(res.sentry + '\n')
+// })
 
 async function startServer() {
   app.listen(PORT, () => {
     console.log(`Lis!!!!!tening on port ${PORT} ${process.env.API_VERSION}/tables`)
-    console.log('complicado', `${process.env.API_VERSION}`)
-    console.log('----------', process.env.ACESS_CONTROL_ALLOW_ORIGIN)
+    console.log('complicado ne!', `${process.env.API_VERSION}`)
   })
 }
 

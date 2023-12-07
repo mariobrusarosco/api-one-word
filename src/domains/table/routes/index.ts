@@ -2,7 +2,7 @@ import express from 'express'
 import type { Express } from 'express'
 import TableController from '../controllers/table-controller'
 
-const TableRouting = (app: Express) => {
+const TableRouting = () => {
   const tableRouter = express.Router()
 
   tableRouter.post('/', TableController.createTable)
@@ -13,7 +13,7 @@ const TableRouting = (app: Express) => {
   tableRouter.post('/join/:inviteCode', TableController.joinTable)
   tableRouter.patch('/:tableId/profile', TableController.updateProfile)
 
-  app.use(`${process.env.API_VERSION}/tables`, tableRouter)
+  return tableRouter
 }
 
 export default TableRouting

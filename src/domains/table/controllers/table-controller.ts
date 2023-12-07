@@ -7,6 +7,7 @@ import { Prisma, TableRole } from '@prisma/client'
 import { getUserCookie } from '../../../domains/shared/utils/getUserCookie'
 
 async function getAllTables(_: Request, res: Response) {
+  throw new Error('Tables!')
   try {
     const results = await db.table.findMany({
       include: { profiles: true, channels: true }
@@ -14,7 +15,7 @@ async function getAllTables(_: Request, res: Response) {
     return res.status(200).send(results)
   } catch (error) {
     // log here: ErrorMapper.BIG_FIVE_HUNDRED.debug
-    console.error(error?.message, error)
+    console.error('---------', { error })
     return res
       .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
       .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.userMessage)
