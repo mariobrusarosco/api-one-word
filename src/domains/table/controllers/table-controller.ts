@@ -14,6 +14,7 @@ async function getAllTables(_: Request, res: Response) {
     return res.status(200).send(results)
   } catch (error) {
     // log here: ErrorMapper.BIG_FIVE_HUNDRED.debug
+    console.error(error?.message, error)
     return res
       .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
       .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.userMessage)

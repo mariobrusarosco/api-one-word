@@ -17,7 +17,7 @@ const app = express()
 // app.set('trust proxy', 1)
 
 const corsConfig = {
-  origin: 'http://localhost:5173',
+  origin: true,
   credentials: true
 }
 app.use(cors(corsConfig))
