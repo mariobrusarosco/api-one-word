@@ -38,7 +38,6 @@ app.use(cors(corsConfig))
 app.use(cookieParser() as any)
 app.use(express.json())
 app.use(logger)
-app.use(authentication)
 
 // Rest routes - temporary place
 TableRouting(app)
