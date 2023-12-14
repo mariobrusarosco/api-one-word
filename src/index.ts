@@ -1,6 +1,5 @@
 import express from 'express'
 import cookieParser from 'cookie-parser'
-import websocket from 'ws'
 import TableRouting from './domains/table/routes'
 import ChannelRouting from './domains/channel/routes'
 import MessageRouting from './domains/message/routes'
@@ -9,31 +8,33 @@ import logger from './middlewares/logger'
 import authentication from './middlewares/authentication'
 import * as Sentry from '@sentry/node'
 import { ProfilingIntegration } from '@sentry/profiling-node'
+import { startSocketServer } from './services/app-initialization/start-socket-server'
+import { startWebServer } from './services/app-initialization/start-web-server'
 
 const cors = require('cors')
-const PORT = process.env.PORT || 3000
 const app = express()
 
-Sentry.init({
-  dsn: process.env.SENTRY_DSN,
-  integrations: [
-    // enable HTTP calls tracing
-    new Sentry.Integrations.Http({ tracing: true }),
-    // enable Express.js middleware tracing
-    new Sentry.Integrations.Express({ app }),
-    new ProfilingIntegration()
-  ],
-  // Performance Monitoring
-  tracesSampleRate: 1.0,
-  // Set sampling rate for profiling - this is relative to tracesSampleRate
-  profilesSampleRate: 1.0
-})
-
-// The request handler must be the first middleware on the app
-app.use(Sentry.Handlers.requestHandler())
-// app.set('trust proxy', 1)
-// TracingHandler creates a trace for every incoming request
-app.use(Sentry.Handlers.tracingHandler())
+if (process.env.NODE_ENV !== 'local') {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    integrations: [
+      // enable HTTP calls tracing
+      new Sentry.Integrations.Http({ tracing: true }),
+      // enable Express.js middleware tracing
+      new Sentry.Integrations.Express({ app }),
+      new ProfilingIntegration()
+    ],
+    // Performance Monitoring
+    tracesSampleRate: 1.0,
+    // Set sampling rate for profiling - this is relative to tracesSampleRate
+    profilesSampleRate: 1.0
+  })
+  // The request handler must be the first middleware on the app
+  app.use(Sentry.Handlers.requestHandler())
+  // app.set('trust proxy', 1)
+  // TracingHandler creates a trace for every incoming request
+  app.use(Sentry.Handlers.tracingHandler())
+}
 
 const corsConfig = {
   origin: true,
@@ -64,12 +65,9 @@ MessageRouting(app)
 // UserRouting(app)
 // AuthRouting(app)
 
-app.use('/socket', (req, res) => {
-  console.log('trying socket')
-
-  res.send('socket')
-})
-app.use(Sentry.Handlers.errorHandler())
+if (process.env.NODE_ENV !== 'local') {
+  app.use(Sentry.Handlers.errorHandler())
+}
 
 // Optional fallthrough error handler
 // app.use(function onError(err, req, res: any) {
@@ -79,20 +77,13 @@ app.use(Sentry.Handlers.errorHandler())
 //   res.end(res.sentry + '\n')
 // })
 
-async function startServer() {
-  const server = app.listen(PORT, () => {
-    console.log(`Listening on port: ${PORT}`)
-  })
-  const socketServer = new websocket.Server({
-    server
-  })
+async function startServers() {
+  const server = startWebServer(app)
 
-  socketServer.on('connection', socket => {
-    console.log('connected')
-  })
+  startSocketServer(server)
 }
 
-startServer()
+startServers()
 
 export default app
 
