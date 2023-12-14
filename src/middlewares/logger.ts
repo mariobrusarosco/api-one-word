@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 
 const logger = (req: Request, res: Response, next: NextFunction) => {
   console.log('[logger]', req.url)
-  console.log('[cookies]', req.cookies)
+  console.log('[cookies]', JSON.stringify(req.cookies))
   next()
 }
 

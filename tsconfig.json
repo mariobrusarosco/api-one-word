@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "ES2020",
     "module": "CommonJS",
     "lib": ["ES2017", "dom"],
     "outDir": "./dist",
@@ -10,6 +10,8 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "types": ["node"],
-    "moduleResolution": "Node"
+    "moduleResolution": "Node",
+    "skipLibCheck": true,
+    "strictNullChecks": true
   }
 }

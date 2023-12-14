@@ -7,7 +7,6 @@ import { Prisma, TableRole } from '@prisma/client'
 import { getUserCookie } from '../../../domains/shared/utils/getUserCookie'
 
 async function getAllTables(_: Request, res: Response) {
-  throw new Error('Tables!')
   try {
     const results = await db.table.findMany({
       include: { profiles: true, channels: true }

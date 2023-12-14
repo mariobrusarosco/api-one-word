@@ -1,6 +1,6 @@
 import express from 'express'
 import cookieParser from 'cookie-parser'
-
+import websocket from 'ws'
 import TableRouting from './domains/table/routes'
 import ChannelRouting from './domains/channel/routes'
 import MessageRouting from './domains/message/routes'
@@ -13,8 +13,6 @@ import { ProfilingIntegration } from '@sentry/profiling-node'
 const cors = require('cors')
 const PORT = process.env.PORT || 3000
 const app = express()
-
-console.log('process.env.SENTRY_DSN', process.env.SENTRY_DSN)
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
@@ -60,16 +58,17 @@ app.use(cookieParser() as any)
 app.use(express.json())
 app.use(logger)
 
-app.use(`${process.env.API_VERSION}/tables`, TableRouting())
+TableRouting(app)
 ChannelRouting(app)
 MessageRouting(app)
 // UserRouting(app)
 // AuthRouting(app)
 
-app.get('/debug-sentry', function mainHandler(req, res) {
-  throw new Error('My first Sentry error!')
-})
+app.use('/socket', (req, res) => {
+  console.log('trying socket')
 
+  res.send('socket')
+})
 app.use(Sentry.Handlers.errorHandler())
 
 // Optional fallthrough error handler
@@ -81,9 +80,15 @@ app.use(Sentry.Handlers.errorHandler())
 // })
 
 async function startServer() {
-  app.listen(PORT, () => {
-    console.log(`Lis!!!!!tening on port ${PORT} ${process.env.API_VERSION}/tables`)
-    console.log('complicado ne!', `${process.env.API_VERSION}`)
+  const server = app.listen(PORT, () => {
+    console.log(`Listening on port: ${PORT}`)
+  })
+  const socketServer = new websocket.Server({
+    server
+  })
+
+  socketServer.on('connection', socket => {
+    console.log('connected')
   })
 }
 
