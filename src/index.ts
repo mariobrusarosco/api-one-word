@@ -5,7 +5,6 @@ import ChannelRouting from './domains/channel/routes'
 import MessageRouting from './domains/message/routes'
 
 import logger from './middlewares/logger'
-import authentication from './middlewares/authentication'
 import * as Sentry from '@sentry/node'
 import { ProfilingIntegration } from '@sentry/profiling-node'
 import { startSocketServer } from './services/app-initialization/start-socket-server'
@@ -13,8 +12,13 @@ import { startWebServer } from './services/app-initialization/start-web-server'
 
 const cors = require('cors')
 const app = express()
+//
 
 if (process.env.NODE_ENV !== 'local') {
+  const socketAdmin = express()
+  socketAdmin.use(express.static('./node_modules/@socket.io/admin-ui/ui/dist'))
+  socketAdmin.listen('5000')
+
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
     integrations: [
@@ -37,27 +41,30 @@ if (process.env.NODE_ENV !== 'local') {
 }
 
 const corsConfig = {
-  origin: true,
+  // origin: true,
+  origin: process.env.ACCESS_CONTROL_ALLOW_ORIGIN,
   credentials: true
 }
 app.use(cors(corsConfig))
 // app.options('*', cors(corsConfig))
 
-// app.use(function (req, res, next) {
-//   res.header('Access-Control-Allow-Origin', process.env.ACESS_CONTROL_ALLOW_ORIGIN)
-//   res.header(
-//     'Access-Control-Allow-Headers',
-//     'Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Origin'
-//   )
-//   res.header('Access-Control-Allow-Credentials', 'true')
-//   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH,OPTIONS')
+console.log(process.env.ACCESS_CONTROL_ALLOW_ORIGIN)
 
-//   next()
-// })
+app.use(function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', process.env.ACCESS_CONTROL_ALLOW_ORIGIN)
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Origin'
+  )
+  res.header('Access-Control-Allow-Credentials', 'true')
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH,OPTIONS')
+
+  next()
+})
 
 app.use(cookieParser() as any)
 app.use(express.json())
-app.use(logger)
+// app.use(logger)
 
 TableRouting(app)
 ChannelRouting(app)
