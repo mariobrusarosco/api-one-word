@@ -17,7 +17,8 @@ export const startSocketServer = (
       origin: [
         'http://localhost:5173',
         'https://admin.socket.io',
-        'http://localhost:5000'
+        'http://localhost:5000',
+        'https://one-word-game.netlify.app'
       ],
       methods: ['GET', 'POST'],
       credentials: true
