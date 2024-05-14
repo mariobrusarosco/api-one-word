@@ -32,6 +32,9 @@ By using:
 yarn
 ```
 
+- Setup Environment Variables:
+  // TODO
+
 - Run the project:
 
 ```bash

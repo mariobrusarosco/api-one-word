@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node'
 import express from 'express'
 import cookieParser from 'cookie-parser'
 import TableRouting from './domains/table/routes'
@@ -5,8 +6,7 @@ import ChannelRouting from './domains/channel/routes'
 import MessageRouting from './domains/message/routes'
 
 import logger from './middlewares/logger'
-import * as Sentry from '@sentry/node'
-import { ProfilingIntegration } from '@sentry/profiling-node'
+import { nodeProfilingIntegration } from '@sentry/profiling-node'
 import { startSocketServer } from './services/app-initialization/start-socket-server'
 import { startWebServer } from './services/app-initialization/start-web-server'
 
@@ -20,24 +20,22 @@ if (process.env.NODE_ENV !== 'local') {
   socketAdmin.listen('5000')
 
   Sentry.init({
+    enableTracing: true,
+    environment: process.env.NODE_ENV,
     dsn: process.env.SENTRY_DSN,
+    release: 'api-one-word@' + process.env.npm_package_version,
     integrations: [
-      // enable HTTP calls tracing
-      new Sentry.Integrations.Http({ tracing: true }),
-      // enable Express.js middleware tracing
-      new Sentry.Integrations.Express({ app }),
-      new ProfilingIntegration()
+      Sentry.captureConsoleIntegration(),
+      nodeProfilingIntegration(),
+      Sentry.httpIntegration()
     ],
+
     // Performance Monitoring
     tracesSampleRate: 1.0,
     // Set sampling rate for profiling - this is relative to tracesSampleRate
     profilesSampleRate: 1.0
   })
-  // The request handler must be the first middleware on the app
-  app.use(Sentry.Handlers.requestHandler())
-  // app.set('trust proxy', 1)
-  // TracingHandler creates a trace for every incoming request
-  app.use(Sentry.Handlers.tracingHandler())
+  Sentry.setupExpressErrorHandler(app)
 }
 
 const corsConfig = {
@@ -72,10 +70,7 @@ MessageRouting(app)
 // UserRouting(app)
 // AuthRouting(app)
 
-if (process.env.NODE_ENV !== 'local') {
-  app.use(Sentry.Handlers.errorHandler())
-}
-
+Sentry.setupExpressErrorHandler(app)
 // Optional fallthrough error handler
 // app.use(function onError(err, req, res: any) {
 //   // The error id is attached to `res.sentry` to be returned
