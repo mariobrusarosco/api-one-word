@@ -44,7 +44,7 @@ app.use(function (req, res, next) {
 
 app.use(cookieParser() as any)
 app.use(express.json())
-// app.use(logger)
+app.use(logger)
 
 TableRouting(app)
 ChannelRouting(app)

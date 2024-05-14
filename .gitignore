@@ -16,3 +16,6 @@ yarn-error.log
 one-word.code-workspace
 .env
 .DS_Store
+
+# Sentry Config File
+.sentryclirc

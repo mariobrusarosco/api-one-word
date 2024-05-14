@@ -1,15 +1,16 @@
 {
   "name": "api-one-word",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "API - One Word",
   "main": "index.js",
   "scripts": {
     "build": "rimraf ./dist && yarn generate-schema && tsc",
     "dev": "nodemon -r dotenv/config ./src/index.ts",
     "start": "node -r dotenv/config ./dist/src/index.js",
-    "compile": "tsc --noEmit",
+    "compile": "tsc",
     "studio": "prisma studio --schema=./src/prisma/schema.prisma",
-    "generate-schema": "prisma generate --schema=./src/prisma/schema.prisma"
+    "generate-schema": "prisma generate --schema=./src/prisma/schema.prisma",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org mario-79 --project one-word ./dist && sentry-cli sourcemaps upload --org mario-79 --project one-word ./dist"
   },
   "prisma": {
     "schema": "src/prisma/schema.prisma"
@@ -26,6 +27,7 @@
   "homepage": "https://github.com/mariobrusarosco/api-one-word/#readme",
   "dependencies": {
     "@prisma/client": "^5.5.2",
+    "@sentry/cli": "^2.31.2",
     "@sentry/node": "^8.0.0",
     "@sentry/profiling-node": "^8.0.0",
     "@socket.io/admin-ui": "^0.5.1",
