@@ -1,4 +1,7 @@
-import * as Sentry from '@sentry/node'
+// Disclaimer: Following Sentry DOCs, the above code should be placed in the main file before importing "Express" :https://docs.sentry.io/platforms/javascript/guides/express/
+import './services/profiling/sentry-instrument'
+
+const Sentry = require('@sentry/node')
 import express from 'express'
 import cookieParser from 'cookie-parser'
 import TableRouting from './domains/table/routes'
@@ -6,37 +9,16 @@ import ChannelRouting from './domains/channel/routes'
 import MessageRouting from './domains/message/routes'
 
 import logger from './middlewares/logger'
-import { nodeProfilingIntegration } from '@sentry/profiling-node'
 import { startSocketServer } from './services/app-initialization/start-socket-server'
 import { startWebServer } from './services/app-initialization/start-web-server'
 
+// TODO Change to ESM import
 const cors = require('cors')
 const app = express()
-//
 
-if (process.env.NODE_ENV !== 'local') {
-  const socketAdmin = express()
-  socketAdmin.use(express.static('./node_modules/@socket.io/admin-ui/ui/dist'))
-  socketAdmin.listen('5000')
-
-  Sentry.init({
-    enableTracing: true,
-    environment: process.env.NODE_ENV,
-    dsn: process.env.SENTRY_DSN,
-    release: 'api-one-word@' + process.env.npm_package_version,
-    integrations: [
-      Sentry.captureConsoleIntegration(),
-      nodeProfilingIntegration(),
-      Sentry.httpIntegration()
-    ],
-
-    // Performance Monitoring
-    tracesSampleRate: 1.0,
-    // Set sampling rate for profiling - this is relative to tracesSampleRate
-    profilesSampleRate: 1.0
-  })
-  Sentry.setupExpressErrorHandler(app)
-}
+const socketAdmin = express()
+socketAdmin.use(express.static('./node_modules/@socket.io/admin-ui/ui/dist'))
+socketAdmin.listen('5000')
 
 const corsConfig = {
   // origin: true,
