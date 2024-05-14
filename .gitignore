@@ -1,22 +1,18 @@
 # Folders
 node_modules
 build
+dist
+
 
 # Files
 error.log
 combined.log
 exceptions.log
 crash.log
-
 .env
 npm-debug.log
 yarn-error.log
-
 .vscode
-
-cypress/screenshots
-cypress/videos
-
-
+one-word.code-workspace
 .env
-dist
+.DS_Store

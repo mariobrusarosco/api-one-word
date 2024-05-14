@@ -93,12 +93,3 @@ async function startServers() {
 startServers()
 
 export default app
-
-// Middleware flow POC!
-// app.use(middleware1)
-// app.use(middleware2)
-// app.get('/middlewares', (_, res) => {
-//   console.log('GET on /middlewares')
-//   res.send('middlewares')
-// })
-// Middleware flow POC!
