@@ -20,6 +20,7 @@ const socketAdmin = express()
 socketAdmin.use(express.static('./node_modules/@socket.io/admin-ui/ui/dist'))
 socketAdmin.listen('5000')
 
+console.log(process.env.ACCESS_CONTROL_ALLOW_ORIGIN)
 const corsConfig = {
   // origin: true,
   origin: process.env.ACCESS_CONTROL_ALLOW_ORIGIN,

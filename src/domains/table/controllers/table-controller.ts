@@ -9,14 +9,13 @@ import Logger from '../../../services/profiling'
 
 async function getAllTables(_: Request, res: Response) {
   try {
-    Logger.log('Getting all tables')
     const results = await db.table.findMany({
       include: { profiles: true, channels: true }
     })
     return res.status(200).send(results)
   } catch (error) {
     // log here: ErrorMapper.BIG_FIVE_HUNDRED.debug
-    console.error('---------', { error })
+    Logger.error(`[TABLES - GET] ${error}`)
     return res
       .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
       .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.userMessage)

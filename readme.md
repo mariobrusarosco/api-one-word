@@ -45,6 +45,28 @@ Now, the **API** is exposed on _http://localhost:3000_
 
 ---
 
+## Creating a local database
+
+```bash
+yarn prisma migrate dev --name init
+```
+
+## Updating the Database
+
+// TODO
+
+## Accessing DB content
+
+```
+yarn prisma studio
+```
+
+### Profiling and Logging
+
+This projects uses the _Sentry's Free Plan_
+
+[URL](https://mario-79.sentry.io/issues/?project=4506356576747520&referrer=sidebar&statsPeriod=30d)
+
 ### Hosting the API
 
 I'm using **Railway** to host the project. The url is [https://api-one-word.up.railway.app/](https://api-one-word.up.railway.app/)
@@ -56,19 +78,3 @@ I'm using **Railway** to host the project. The url is [https://api-one-word.up.r
 [Postman URL](https://www.postman.com/mario-brusarosco/workspace/mario-brusarosco/collection/2930329-c069887a-c13d-4bee-8bda-e69e3f5b9163)
 
 ---
-
-## A REST API made with express and Mongo DB
-
-## Local Environment
-
-This project is not using any local database storage.
-When running it locally, you'll be pointed to a remote host (mongodb.com).
-
-For now, we don't have security measures, so the credentials
-are shared via .env file under the key of 'DB_CREDENTIALS'
-
-## To access DB content
-
-```
-yarn prisma studio
-```

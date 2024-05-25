@@ -1,9 +1,8 @@
 import * as Sentry from '@sentry/node'
 
 const Logger = {
-  log: (msg: string) => {
-    console.log(msg)
-    Sentry.captureMessage('Something went wrong')
+  error: (msg: string) => {
+    Sentry.captureMessage(msg)
   }
 }
 
