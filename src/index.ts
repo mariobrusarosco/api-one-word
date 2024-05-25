@@ -20,7 +20,10 @@ const socketAdmin = express()
 socketAdmin.use(express.static('./node_modules/@socket.io/admin-ui/ui/dist'))
 socketAdmin.listen('5000')
 
-console.log(process.env.ACCESS_CONTROL_ALLOW_ORIGIN)
+console.log(
+  '--- ACCESS_CONTROL_ALLOW_ORIGIN ---',
+  process.env.ACCESS_CONTROL_ALLOW_ORIGIN
+)
 const corsConfig = {
   // origin: true,
   origin: process.env.ACCESS_CONTROL_ALLOW_ORIGIN,
@@ -28,8 +31,6 @@ const corsConfig = {
 }
 app.use(cors(corsConfig))
 // app.options('*', cors(corsConfig))
-
-console.log(process.env.ACCESS_CONTROL_ALLOW_ORIGIN)
 
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', process.env.ACCESS_CONTROL_ALLOW_ORIGIN)
