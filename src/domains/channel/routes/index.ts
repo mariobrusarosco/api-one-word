@@ -6,6 +6,7 @@ const TournamentRouting = (app: Express) => {
   const channelRouter = express.Router()
 
   channelRouter.post('/', ChannelController.createChannel)
+  channelRouter.get('/:channelId', ChannelController.getChannelById)
   channelRouter.delete('/:channelId', ChannelController.deleteChannel)
   channelRouter.patch('/:channelId', ChannelController.updateChannel)
 

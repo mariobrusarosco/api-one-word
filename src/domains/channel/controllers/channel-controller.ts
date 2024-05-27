@@ -4,6 +4,45 @@ import { ErrorMapper } from '../error-handling/mapper'
 import db from '../../../services/database'
 import { Prisma } from '@prisma/client'
 
+async function getChannelById(req: Request, res: Response) {
+  const channeld = req?.params.channelId
+
+  console.log('channeld', channeld)
+
+  if (!channeld) {
+    return res
+      .status(ErrorMapper.MISSING_CHANNEL_ID.status)
+      .json(ErrorMapper.MISSING_CHANNEL_ID)
+  }
+
+  try {
+    const channel = await db.channel.findUnique({
+      where: {
+        id: channeld
+      },
+      include: {
+        messages: {
+          orderBy: { createdAt: 'asc' }
+          // include: { member: { select: { firstName: true } } }
+        }
+      }
+    })
+
+    if (!channel) {
+      return res
+        .status(ErrorMapper.NOT_FOUND.status)
+        .send(ErrorMapper.NOT_FOUND.userMessage)
+    }
+
+    return res.json(channel)
+  } catch (error) {
+    console.log('error', error)
+    return res
+      .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
+      .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.userMessage)
+  }
+}
+
 async function createChannel(req: Request, res: Response) {
   const body = req?.body as Prisma.ChannelCreateInput & { tableId: string }
 
@@ -112,7 +151,8 @@ async function updateChannel(req: Request, res: Response) {
 const ChannelController = {
   createChannel,
   deleteChannel,
-  updateChannel
+  updateChannel,
+  getChannelById
 }
 
 export default ChannelController
