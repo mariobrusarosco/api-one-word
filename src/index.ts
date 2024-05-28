@@ -26,8 +26,8 @@ console.log(
 )
 const corsConfig = {
   // origin: true,
-  origin: process.env.ACCESS_CONTROL_ALLOW_ORIGIN,
-  credentials: true
+  origin: process.env.ACCESS_CONTROL_ALLOW_ORIGIN
+  // credentials: true
 }
 app.use(cors(corsConfig))
 // app.options('*', cors(corsConfig))
