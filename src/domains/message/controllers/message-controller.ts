@@ -49,8 +49,8 @@ async function getChannelMessages(req: AppRequest, res: Response) {
       messages = await db.message.findMany({
         where: { channelId: params.channelId },
         take: -take,
-        orderBy: { createdAt: 'asc' },
-        include: { member: { select: { firstName: true } } }
+        orderBy: { createdAt: 'asc' }
+        // include: { member: { select: { firstName: true } } }
       })
     } else {
       messages = await db.message.findMany({
@@ -60,8 +60,8 @@ async function getChannelMessages(req: AppRequest, res: Response) {
         cursor: {
           id: cursor as string
         },
-        orderBy: { createdAt: 'asc' },
-        include: { member: { select: { firstName: true } } }
+        orderBy: { createdAt: 'asc' }
+        // include: { member: { select: { firstName: true } } }
       })
     }
 

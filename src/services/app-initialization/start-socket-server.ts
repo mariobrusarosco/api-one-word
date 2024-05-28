@@ -36,8 +36,33 @@ export const startSocketServer = (
     next()
   })
 
-  socketServer.on('connection', async (socket: GameSocket) => {
+  socketServer.of('/').adapter.on('join-room', async (room, id) => {
+    const users = (await socketServer.of('/').in(room).fetchSockets()).map(socket => {
+      return {
+        userID: socket.id,
+        username: socket.handshake.auth.username
+      }
+    })
+
+    socketServer.to(room).emit('update_list_of_users', users)
+  })
+
+  socketServer.of('/').adapter.on('leave-room', async (room, id) => {
+    console.log('******* someones left')
+    const users = (await socketServer.of('/').in(room).fetchSockets()).map(socket => {
+      return {
+        userID: socket.id,
+        username: socket.handshake.auth.username
+      }
+    })
+
+    socketServer.to(room).emit('update_list_of_users', users)
+  })
+
+  socketServer.on('connection', async (socket: any) => {
     connections.add(socket)
+    console.log('oooooooo  ', socket.handshake.auth.username)
+
     const users = new Set() as any
 
     socketServer.of('/').sockets.forEach((value: any, key: string) => {
@@ -76,7 +101,17 @@ export const startSocketServer = (
 
     socket.on(ClientSocketEvents.JOIN_TABLE, (tableId: string) => {
       socket.join(tableId)
-      console.log('joined table:', tableId)
+
+      // socketServer.to(tableId).emit('update_list_of_users', ['eita'])
+      // const rooms = socketServer.of('/').adapter.rooms
+      // const currentRoom = rooms.get(tableId)
+      // console.log({ currentRoom })
+
+      // socketServer.of('/').adapter.on('create-room', (room, id) => {
+      //   console.log(`socket ${id} has joined room ${room}`)
+      // })
+
+      // console.log('joined table:', tableId)
     })
 
     socket.on(ClientSocketEvents.LEAVE_TABLE, (tableId: string) => {
@@ -96,12 +131,4 @@ export const startSocketServer = (
   })
 
   return socketServer
-}
-
-const mapToRoomUsers = (roomUsers: any, users: any) => {
-  return [...roomUsers].map((socketId: any) => {
-    return users.find(
-      (user: { userID: string; username: string }) => user.userID === socketId
-    )
-  })
 }
