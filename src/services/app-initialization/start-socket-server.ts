@@ -1,11 +1,12 @@
 import type { IncomingMessage, Server, ServerResponse } from 'http'
 import websocket from 'ws'
 import { Server as SocketServer } from 'socket.io'
-import type { Socket } from 'socket.io'
+import { Socket } from 'socket.io'
 import { SocketEvents } from '../../domains/socket/typing/enums'
 import { Namespace } from '../../domains/socket/Namespace'
 import { join } from 'path'
 import { instrument } from '@socket.io/admin-ui'
+import { ClientSocketEvents } from './client-sockets-events'
 
 type GameSocket = Socket<any, any, { gameId: string }>
 
@@ -26,6 +27,7 @@ export const startSocketServer = (
     }
   })
   instrument(socketServer, { auth: false, mode: 'development' })
+  const connections = new Set()
 
   // Middleware
   socketServer.use((socket: any, next) => {
@@ -35,43 +37,64 @@ export const startSocketServer = (
   })
 
   socketServer.on('connection', async (socket: GameSocket) => {
-    const users = [] as any
+    connections.add(socket)
+    const users = new Set() as any
 
     socketServer.of('/').sockets.forEach((value: any, key: string) => {
-      users.push({
+      users.add({
         userID: key,
         username: value.username
       })
     })
 
-    console.log(
-      'user:',
-      socket.id,
-      ' to play game: ',
-      socket.handshake.auth.tableId,
-      ' with users: ',
-      socketServer.sockets.adapter.rooms.get(socket.handshake.auth.tableId),
-      'all users',
-      users
-    )
+    // const gameRoomId = socket.handshake.auth.tableId
+    // await socket.join(gameRoomId)
+    // console.log({ users, socket })
 
-    const gameRoomId = socket.handshake.auth.tableId
+    // console.log(
+    //   'user:',
+    //   socket.id,
+    //   ' to play game: ',
+    //   socket.handshake.auth.tableId,
+    //   ' with users: ',
+    //   socketServer.sockets.adapter.rooms.get(socket.handshake.auth.tableId),
+    // )
 
-    await socket.join(gameRoomId)
-    socketServer
-      .to(gameRoomId)
-      .emit(
-        'update_list_of_users',
-        mapToRoomUsers(
-          socketServer.sockets.adapter.rooms.get(socket.handshake.auth.tableId),
-          users
-        )
-      )
+    // socketServer
+    //   .to(gameRoomId)
+    //   .emit(
+    //     'update_list_of_users',
+    //     mapToRoomUsers(
+    //       socketServer.sockets.adapter.rooms.get(socket.handshake.auth.tableId),
+    //       users
+    //     )
+    //   )
 
-    socket.on('message', (data: any) => {
-      socketServer.to(gameRoomId).emit('chat-message', data.toString())
+    socket.on('chat-message', (data: any) => {
+      // socketServer.to(gameRoomId).emit('chat-message', data.toString())
     })
+
+    socket.on(ClientSocketEvents.JOIN_TABLE, (tableId: string) => {
+      socket.join(tableId)
+      console.log('joined table:', tableId)
+    })
+
+    socket.on(ClientSocketEvents.LEAVE_TABLE, (tableId: string) => {
+      socket.leave(tableId)
+      console.log('left table:', tableId)
+    })
+
+    socket.on('disconnect', () => {
+      console.log('user disconnected')
+    })
+
+    // console.log(socketServer.sockets.adapter.rooms)
+
+    const count2 = socketServer.of('/').sockets.size
+
+    console.log('count:', count2)
   })
+
   return socketServer
 }
 
