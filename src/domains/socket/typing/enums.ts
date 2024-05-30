@@ -1,11 +1,11 @@
 export enum SocketEvents {
-  CONNECT = 'connect',
-  CLIENT_CONNECTED = 'client_connected',
-  DISCONNECT = 'disconnect',
+  CONNECTED = 'connected',
+  DISCONNECTED = 'disconnected',
+  CREATE_GAME = 'create_game',
+  LEAVE_TABLE = 'leave-table',
+  JOIN_TABLE = 'join-table',
+  JOIN_GAME_ROOM = 'join-game-room',
   MESSAGE = 'message',
-  CHAT_MESSAGE = 'chat-message',
-  CHAT_MESSAGE_INCOMING = 'chat-message-incoming',
-  CHAT_MESSAGE_SENDING = 'chat-message-sending',
-  GET_NAMESPACES = 'get-namespaces',
-  JOIN_GAME_ROOM = 'join-game-room'
+  NEW_CHAT_MESSAGE = 'new-chat-message',
+  UPDATE_CHAT_MESSAGES = 'update-chat-messages'
 }
