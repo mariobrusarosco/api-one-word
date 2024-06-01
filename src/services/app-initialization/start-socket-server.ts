@@ -26,6 +26,13 @@ export const startSocketServer = (
   const handler = SocketHandler(socketServer)
 
   socketServer.on('connection', async (socket: any) => {
+    console.log('user connected', socket.handshake.auth.username)
+
+    // socket.on('join-table', (room: any) => {
+    //   console.log('on  join-table', room)
+    //   socket.join(room)
+    // })
+
     handler.joinTable(socket)
     handler.leaveTable(socket)
     handler.chatMessage(socket)
