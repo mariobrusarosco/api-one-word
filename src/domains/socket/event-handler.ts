@@ -4,10 +4,16 @@ import { SocketEvents } from './typing/enums'
 export const SocketHandler = (socketServer: any) => {
   return {
     joinTable(socket: any) {
-      socket.on(SocketEvents.JOIN_TABLE, (tableId: string) => socket.join(tableId))
+      socket.on(SocketEvents.JOIN_TABLE, (tableId: string) => {
+        console.log('handler.... on  join-table', tableId)
+        socket.join(tableId)
+      })
     },
     leaveTable(socket: any) {
-      socket.on(SocketEvents.LEAVE_TABLE, (tableId: string) => socket.leave(tableId))
+      socket.on(SocketEvents.LEAVE_TABLE, (tableId: string) => {
+        console.log('handler.... on  leave-table', tableId)
+        socket.leave(tableId)
+      })
     },
     chatMessage(socket: any) {
       socket.on(SocketEvents.NEW_CHAT_MESSAGE, (tableId: string, message: string) =>
@@ -30,7 +36,7 @@ export const SocketHandler = (socketServer: any) => {
           }
         )
 
-        socketServer.to(room).emit('update_list_of_users', users)
+        socketServer.to(room).emit(SocketEvents.UPDATE_TABLE_PARTICIPANTS, users)
       }
     }
   }
