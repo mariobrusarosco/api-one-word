@@ -61,6 +61,12 @@ yarn prisma migrate dev --name init
 yarn prisma studio
 ```
 
+## Running a migration
+
+```bash
+yarn prisma migrate dev --name init
+```
+
 ### Profiling and Logging
 
 This projects uses the _Sentry's Free Plan_
