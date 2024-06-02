@@ -10,7 +10,7 @@ import Logger from '../../../services/profiling'
 async function getAllTables(_: Request, res: Response) {
   try {
     const results = await db.table.findMany({
-      include: { profiles: true, channels: true }
+      include: { seats: true, channels: true }
     })
     return res.status(200).send(results)
   } catch (error) {
@@ -37,7 +37,7 @@ async function createTable(req: Request, res: Response) {
       data: {
         name: body.name,
         inviteCode: uuidV4(),
-        profiles: {
+        seats: {
           create: {
             memberId: fakeAuth,
             role: TableRole.ADMIN
@@ -71,7 +71,7 @@ async function getTable(req: Request, res: Response) {
   try {
     const result = await db.table.findUnique({
       where: { id: tableId },
-      include: { profiles: true }
+      include: { seats: true }
     })
 
     return res.status(200).send(result)
@@ -154,7 +154,7 @@ async function joinTable(req: Request, res: Response) {
 
 async function updateProfile(req: Request, res: Response) {
   try {
-    const body = req?.body as Prisma.TableProfileUpdateInput
+    const body = req?.body as Prisma.TableSeatUpdateInput
     const role = body?.role as TableRole
     const profileId = body?.id as string
 
@@ -162,7 +162,7 @@ async function updateProfile(req: Request, res: Response) {
       return res.status(400).json(ErrorMapper.MISSING_PROFILE_ROLE)
     }
 
-    const updateProfile = await db.tableProfile.update({
+    const updateProfile = await db.tableSeat.update({
       where: { id: profileId },
       data: { role }
     })
