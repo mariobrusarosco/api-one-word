@@ -29,6 +29,7 @@ model TableSeat {
   updatedAt DateTime  @updatedAt
   member    Member    @relation(fields: [memberId], references: [userId], onDelete: Cascade)
   table     Table     @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  tempId    String?
 
   @@index([memberId])
   @@index([tableId])
