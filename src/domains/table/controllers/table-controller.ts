@@ -133,7 +133,7 @@ async function joinTable(req: Request, res: Response) {
     const table = await db.table.update({
       where: { inviteCode },
       data: {
-        profiles: {
+        seats: {
           create: {
             memberId: fakeAuth,
             role: TableRole.GUEST
@@ -152,22 +152,22 @@ async function joinTable(req: Request, res: Response) {
   }
 }
 
-async function updateProfile(req: Request, res: Response) {
+async function updateSeat(req: Request, res: Response) {
   try {
     const body = req?.body as Prisma.TableSeatUpdateInput
     const role = body?.role as TableRole
-    const profileId = body?.id as string
+    const seatId = body?.id as string
 
     if (!role) {
       return res.status(400).json(ErrorMapper.MISSING_PROFILE_ROLE)
     }
 
-    const updateProfile = await db.tableSeat.update({
-      where: { id: profileId },
+    const updateSeat = await db.tableSeat.update({
+      where: { id: seatId },
       data: { role }
     })
 
-    res.status(200).json(updateProfile)
+    res.status(200).json(updateSeat)
   } catch (error) {
     console.log(error)
     return res
@@ -183,7 +183,7 @@ const TableController = {
   updateTable,
   updateTableInvite,
   joinTable,
-  updateProfile
+  updateSeat
 }
 
 export default TableController

@@ -11,7 +11,7 @@ const TableRouting = (app: Express) => {
   tableRouter.get('/:tableId', TableController.getTable)
   tableRouter.post('/:tableId/invite', TableController.updateTableInvite)
   tableRouter.post('/join/:inviteCode', TableController.joinTable)
-  tableRouter.patch('/:tableId/profile', TableController.updateProfile)
+  tableRouter.patch('/:tableId/seat', TableController.updateSeat)
 
   app.use(`${process.env.API_VERSION}/tables`, tableRouter)
 }
