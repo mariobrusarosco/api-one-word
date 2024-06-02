@@ -4,6 +4,7 @@ import { getUserCookie } from '../domains/shared/utils/getUserCookie'
 
 const authentication = (req: Request, res: Response, next: NextFunction) => {
   const fakeAuth = getUserCookie(req)
+  console.log('[authentication]', fakeAuth)
 
   if (fakeAuth) {
     return next()
