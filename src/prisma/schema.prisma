@@ -58,7 +58,6 @@ model Channel {
 
 model Message {
   id        String      @id @default(uuid())
-  type      MessageType @default(CHANNEL)
   content   String
   channelId String
   memberId  String
@@ -75,9 +74,4 @@ enum TableRole {
   ADMIN
   MODERATOR
   GUEST
-}
-
-enum MessageType {
-  CHANNEL
-  DIRECT
 }
