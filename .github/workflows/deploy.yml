@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - ./src/prisma/migrations/**
+      - prisma/migrations/**
     branches:
       - main
 

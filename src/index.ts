@@ -11,6 +11,8 @@ import MessageRouting from './domains/message/routes'
 import logger from './middlewares/logger'
 import { startSocketServer } from './services/app-initialization/start-socket-server'
 import { startWebServer } from './services/app-initialization/start-web-server'
+import authentication from './middlewares/authentication'
+import accessControl from './middlewares/access-control'
 
 // TODO Change to ESM import
 const cors = require('cors')
@@ -20,34 +22,20 @@ const socketAdmin = express()
 socketAdmin.use(express.static('./node_modules/@socket.io/admin-ui/ui/dist'))
 socketAdmin.listen('5000')
 
-console.log(
-  '--- ACCESS_CONTROL_ALLOW_ORIGIN ---',
-  process.env.ACCESS_CONTROL_ALLOW_ORIGIN
+// Middlewares
+app.use(
+  cors({
+    origin: process.env.ACCESS_CONTROL_ALLOW_ORIGIN,
+    credentials: true
+  })
 )
-const corsConfig = {
-  // origin: true,
-  origin: process.env.ACCESS_CONTROL_ALLOW_ORIGIN
-  // credentials: true
-}
-app.use(cors(corsConfig))
-// app.options('*', cors(corsConfig))
-
-app.use(function (req, res, next) {
-  res.header('Access-Control-Allow-Origin', process.env.ACCESS_CONTROL_ALLOW_ORIGIN)
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Origin'
-  )
-  res.header('Access-Control-Allow-Credentials', 'true')
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH,OPTIONS')
-
-  next()
-})
-
+app.use(accessControl)
 app.use(cookieParser() as any)
 app.use(express.json())
 app.use(logger)
+app.use(authentication)
 
+// Routing
 TableRouting(app)
 ChannelRouting(app)
 MessageRouting(app)
