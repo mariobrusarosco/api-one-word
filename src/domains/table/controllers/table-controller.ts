@@ -6,9 +6,7 @@ import db from '../../../services/database'
 import { Prisma, TableRole } from '@prisma/client'
 import Logger from '../../../services/profiling'
 import { getUserCookie } from '@/domains/shared/utils/getUserCookie'
-// import { getUserCookie } from '../../shared/utils/getUserCookie'
-// module "c:/Users/mario/coding/api-one-word/src/domains/shared/utils/getUserCookie
-// module "c:/Users/mario/coding/api-one-word/src/domains/shared/utils/getUserCookie"
+
 async function getAllTables(req: Request, res: Response) {
   try {
     const memberId = getUserCookie(req)
