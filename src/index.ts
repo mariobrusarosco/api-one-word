@@ -1,5 +1,6 @@
 // Disclaimer: Following Sentry DOCs, the above code should be placed in the main file before importing "Express" :https://docs.sentry.io/platforms/javascript/guides/express/
 import './services/profiling/sentry-instrument'
+import 'dotenv/config'
 
 const Sentry = require('@sentry/node')
 import express from 'express'
