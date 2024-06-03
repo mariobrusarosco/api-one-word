@@ -7,8 +7,6 @@ import { Prisma } from '@prisma/client'
 async function getChannelById(req: Request, res: Response) {
   const channeld = req?.params.channelId
 
-  console.log('channeld', channeld)
-
   if (!channeld) {
     return res
       .status(ErrorMapper.MISSING_CHANNEL_ID.status)
@@ -19,13 +17,13 @@ async function getChannelById(req: Request, res: Response) {
     const channel = await db.channel.findUnique({
       where: {
         id: channeld
-      },
-      include: {
-        messages: {
-          orderBy: { createdAt: 'asc' }
-          // include: { member: { select: { firstName: true } } }
-        }
       }
+      // include: {
+      //   messages: {
+      //     orderBy: { createdAt: 'asc' }
+      //     // include: { member: { select: { firstName: true } } }
+      //   }
+      // }
     })
 
     if (!channel) {

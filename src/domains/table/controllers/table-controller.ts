@@ -71,7 +71,7 @@ async function getTable(req: Request, res: Response) {
   try {
     const result = await db.table.findUnique({
       where: { id: tableId },
-      include: { seats: true }
+      include: { channels: true }
     })
 
     return res.status(200).send(result)
