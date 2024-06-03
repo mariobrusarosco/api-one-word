@@ -13,6 +13,7 @@ import { startSocketServer } from './services/app-initialization/start-socket-se
 import { startWebServer } from './services/app-initialization/start-web-server'
 import authentication from './middlewares/authentication'
 import accessControl from './middlewares/access-control'
+import AuthenticationRouting from './domains/auth/routes'
 
 // TODO Change to ESM import
 const cors = require('cors')
@@ -39,8 +40,7 @@ app.use(authentication)
 TableRouting(app)
 ChannelRouting(app)
 MessageRouting(app)
-// UserRouting(app)
-// AuthRouting(app)
+AuthenticationRouting(app)
 
 Sentry.setupExpressErrorHandler(app)
 // Optional fallthrough error handler
