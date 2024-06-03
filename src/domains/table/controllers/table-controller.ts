@@ -4,12 +4,16 @@ import { ErrorMapper } from '../error-handling/mapper'
 import { v4 as uuidV4 } from 'uuid'
 import db from '../../../services/database'
 import { Prisma, TableRole } from '@prisma/client'
-import { getUserCookie } from '../../../domains/shared/utils/getUserCookie'
 import Logger from '../../../services/profiling'
-
-async function getAllTables(_: Request, res: Response) {
+import { getUserCookie } from '@/domains/shared/utils/getUserCookie'
+// import { getUserCookie } from '../../shared/utils/getUserCookie'
+// module "c:/Users/mario/coding/api-one-word/src/domains/shared/utils/getUserCookie
+// module "c:/Users/mario/coding/api-one-word/src/domains/shared/utils/getUserCookie"
+async function getAllTables(req: Request, res: Response) {
   try {
+    const memberId = getUserCookie(req)
     const results = await db.table.findMany({
+      where: { seats: { some: { memberId } } },
       include: { seats: true, channels: true }
     })
     return res.status(200).send(results)
@@ -32,20 +36,20 @@ async function createTable(req: Request, res: Response) {
         .json({ message: 'You must provide a name to create a table' })
     }
 
-    const fakeAuth = getUserCookie(req)
+    const memberId = getUserCookie(req)
     const newTable = await db.table.create({
       data: {
         name: body.name,
         inviteCode: uuidV4(),
         seats: {
           create: {
-            memberId: fakeAuth,
+            memberId,
             role: TableRole.ADMIN
           }
         },
         channels: {
           create: {
-            name: 'general'
+            name: 'General'
           }
         }
       }
