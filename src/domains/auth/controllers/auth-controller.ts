@@ -1,17 +1,16 @@
 import { Request, Response } from 'express'
-import type { Express } from 'express'
 import { GlobalErrorMapper } from '../../shared/error-handling/mapper'
 import { ErrorMapper } from '../error-handling/mapper'
 import db from '../../../services/database'
 import Logger from '../../../services/profiling'
-import { Member } from '@prisma/client'
 import { getUserCookie } from '../../shared/utils/getUserCookie'
+import { v4 } from 'uuid'
 
 async function authenticateUser(req: Request, res: Response) {
   try {
     const body = req?.body as { demoId: string }
     const demoId = body?.demoId
-    const authServiceId = `${demoId}-${crypto.randomUUID()}`
+    const authServiceId = `${demoId}-${v4()}`
 
     if (!!demoId) {
       const result = await db.member.create({
@@ -32,7 +31,7 @@ async function authenticateUser(req: Request, res: Response) {
       return res.status(200).send('user created')
     }
   } catch (error: any) {
-    console.error(`[AUTH - POST] ${error}`)
+    Logger.error(`[AUTH - POST] ${error}`)
 
     res
       .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
