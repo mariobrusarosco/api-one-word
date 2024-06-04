@@ -1,14 +1,15 @@
-import { Request, Response } from 'express'
+import { Response } from 'express'
 import { GlobalErrorMapper } from '../../shared/error-handling/mapper'
 import { ErrorMapper } from '../error-handling/mapper'
 import db from '../../../services/database'
 import { Prisma } from '@prisma/client'
-import { getUserCookie } from '../../../domains/shared/utils/getUserCookie'
 import { AppRequest } from 'src/domains/shared/typing/express'
+import { AuthenticatedRequest } from '@/middlewares/authentication'
 
-async function createMessage(req: AppRequest, res: Response) {
+async function createMessage(req: AuthenticatedRequest, res: Response) {
   const body = req?.body as Prisma.MessageCreateInput
   const params = req?.params as { channelId: string }
+  const memberFullName = `${req.authenticatedUser?.firstName} ${req.authenticatedUser?.lastName}`
 
   if (!body.content) {
     return res.status(400).json({ message: ErrorMapper.MISSING_CONTENT })
@@ -19,12 +20,12 @@ async function createMessage(req: AppRequest, res: Response) {
   }
 
   try {
-    const fakeAuth = getUserCookie(req)
     const newMessage = await db.message.create({
       data: {
         content: body.content,
         channelId: params.channelId,
-        memberId: fakeAuth
+        memberId: req.authenticatedUser.id,
+        memberFullName: memberFullName
       }
     })
 
