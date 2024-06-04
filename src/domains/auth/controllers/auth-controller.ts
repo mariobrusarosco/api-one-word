@@ -3,10 +3,11 @@ import { GlobalErrorMapper } from '../../shared/error-handling/mapper'
 import { ErrorMapper } from '../error-handling/mapper'
 import db from '../../../services/database'
 import Logger from '../../../services/profiling'
-import { getUserCookie } from '../../shared/utils/getUserCookie'
+import { Auth } from '../../shared/utils/auth'
 import { v4 } from 'uuid'
+import { AuthenticatedRequest } from '@/middlewares/authentication'
 
-async function authenticateUser(req: Request, res: Response) {
+async function authenticateUser(req: AuthenticatedRequest, res: Response) {
   try {
     const body = req?.body as { demoId: string }
     const demoId = body?.demoId
@@ -16,22 +17,23 @@ async function authenticateUser(req: Request, res: Response) {
       const firstName = demoId.split(' ')[0] ?? 'demo'
       const lastName = demoId.split(' ')[1] ?? ''
 
-      const result = await db.member.create({
+      const user = await db.member.create({
         data: {
-          email: `${firstName}.${lastName}@demo.com`,
+          email: `${firstName}.${lastName}@demo.com`.toLowerCase(),
           firstName,
           lastName,
           authServiceId
         }
       })
 
-      res.cookie('one_word_auth', result.id, {
-        maxAge: 900000000,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production'
-      })
+      const token = Auth.signUserCookieBased(user, res)
+      if (!token) {
+        return res
+          .status(ErrorMapper.TOKEN_FAILURE.status)
+          .send(ErrorMapper.TOKEN_FAILURE.userMessage)
+      }
 
-      return res.status(200).send('user created')
+      return res.status(200).send(user)
     }
   } catch (error: any) {
     Logger.error(`[AUTH - POST] ${error}`)
@@ -42,12 +44,13 @@ async function authenticateUser(req: Request, res: Response) {
   }
 }
 
-async function getAuthenticatedUser(req: Request, res: Response) {
+async function getAuthenticatedUser(req: AuthenticatedRequest, res: Response) {
   try {
-    const userIdOnCookie = getUserCookie(req)
+    const user = req.authenticatedUser
+    console.log('[DEBUG] getAuthenticatedUser', user)
 
     const result = await db.member.findUnique({
-      where: { id: userIdOnCookie }
+      where: { id: user?.id }
     })
 
     if (!result) {

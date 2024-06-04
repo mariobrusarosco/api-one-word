@@ -3,7 +3,7 @@ declare global {
     interface ProcessEnv {
       DATABASE_URL: string
       API_VERSION: string
-      TOKEN_KEY: string
+      JWT_SECRET: string
       ACESS_CONTROL_ALLOW_ORIGIN: string
       NODE_ENV: string
     }

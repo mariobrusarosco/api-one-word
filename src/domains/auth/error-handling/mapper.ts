@@ -9,6 +9,11 @@ export const ErrorMapper = {
     userMessage:
       'You are not logged in. Please, go to Login page and provide your credentials'
   },
+  TOKEN_FAILURE: {
+    status: 401,
+    debug: 'token-write-or-read-failure',
+    userMessage: ''
+  },
   NOT_FOUND: {
     status: 404,
     debug: 'not found',

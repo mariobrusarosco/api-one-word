@@ -12,9 +12,10 @@ import MessageRouting from './domains/message/routes'
 import logger from './middlewares/logger'
 import { startSocketServer } from './services/app-initialization/start-socket-server'
 import { startWebServer } from './services/app-initialization/start-web-server'
-import authentication from './middlewares/authentication'
+import middleware from './middlewares/authentication'
 import accessControl from './middlewares/access-control'
 import AuthenticationRouting from './domains/auth/routes'
+import authentication from './middlewares/authentication'
 
 // TODO Change to ESM import
 const cors = require('cors')

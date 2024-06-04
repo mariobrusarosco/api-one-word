@@ -5,13 +5,13 @@ import { v4 as uuidV4 } from 'uuid'
 import db from '../../../services/database'
 import { Prisma, TableRole } from '@prisma/client'
 import Logger from '../../../services/profiling'
-import { getUserCookie } from '../../shared/utils/getUserCookie'
+import { Auth } from '../../shared/utils/auth'
+import { AuthenticatedRequest } from '@/middlewares/authentication'
 
-async function getAllTables(req: Request, res: Response) {
+async function getAllTables(req: AuthenticatedRequest, res: Response) {
   try {
-    const memberId = getUserCookie(req)
     const results = await db.table.findMany({
-      where: { seats: { some: { memberId } } },
+      where: { seats: { some: { memberId: req.authenticatedUser.id } } },
       include: { seats: true, channels: true }
     })
     return res.status(200).send(results)
@@ -24,7 +24,7 @@ async function getAllTables(req: Request, res: Response) {
   }
 }
 
-async function createTable(req: Request, res: Response) {
+async function createTable(req: AuthenticatedRequest, res: Response) {
   try {
     const body = req?.body as Prisma.TableCreateInput
 
@@ -34,14 +34,13 @@ async function createTable(req: Request, res: Response) {
         .json({ message: 'You must provide a name to create a table' })
     }
 
-    const memberId = getUserCookie(req)
     const newTable = await db.table.create({
       data: {
         name: body.name,
         inviteCode: uuidV4(),
         seats: {
           create: {
-            memberId,
+            memberId: req.authenticatedUser.id,
             role: TableRole.ADMIN
           }
         },
@@ -67,12 +66,11 @@ async function createTable(req: Request, res: Response) {
   }
 }
 
-async function getTable(req: Request, res: Response) {
+async function getTable(req: AuthenticatedRequest, res: Response) {
   const tableId = req?.params.tableId
-  const memberId = getUserCookie(req)
 
   const tableSeat = await db.tableSeat.findFirst({
-    where: { tableId, memberId }
+    where: { tableId, memberId: req.authenticatedUser.id }
   })
 
   if (!tableSeat) {
@@ -138,9 +136,8 @@ async function updateTableInvite(req: Request, res: Response) {
   }
 }
 
-async function joinTable(req: Request, res: Response) {
+async function joinTable(req: AuthenticatedRequest, res: Response) {
   try {
-    const fakeAuth = getUserCookie(req)
     const tableId = req?.params.tableId
     const body = req?.body as { email: string }
     const email = body?.email
@@ -164,7 +161,7 @@ async function joinTable(req: Request, res: Response) {
       }
     })
 
-    res.status(200).json('user has joined')
+    res.status(200).json(table)
   } catch (error: any) {
     // log here: ErrorMapper.BIG_FIVE_HUNDRED.debug
     console.error(error)
