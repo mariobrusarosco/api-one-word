@@ -69,6 +69,17 @@ async function createTable(req: Request, res: Response) {
 
 async function getTable(req: Request, res: Response) {
   const tableId = req?.params.tableId
+  const memberId = getUserCookie(req)
+
+  const tableSeat = await db.tableSeat.findFirst({
+    where: { tableId, memberId }
+  })
+
+  if (!tableSeat) {
+    return res
+      .status(ErrorMapper.MISSING_SEAT.status)
+      .send(ErrorMapper.MISSING_SEAT.userMessage)
+  }
 
   try {
     const result = await db.table.findUnique({
@@ -129,22 +140,31 @@ async function updateTableInvite(req: Request, res: Response) {
 
 async function joinTable(req: Request, res: Response) {
   try {
-    const inviteCode = req?.params.inviteCode
-
     const fakeAuth = getUserCookie(req)
+    const tableId = req?.params.tableId
+    const body = req?.body as { email: string }
+    const email = body?.email
+
+    const userToJoin = await db.member.findFirst({ where: { email } })
+    if (!userToJoin) {
+      return res.status(404).json({ message: 'member not found' })
+    }
+
+    console.log('[DEBUG] ------ USER TO JOIN', userToJoin)
+
     const table = await db.table.update({
-      where: { inviteCode },
+      where: { id: tableId },
       data: {
         seats: {
           create: {
-            memberId: fakeAuth,
+            memberId: userToJoin.id,
             role: TableRole.GUEST
           }
         }
       }
     })
 
-    res.json(table)
+    res.status(200).json('user has joined')
   } catch (error: any) {
     // log here: ErrorMapper.BIG_FIVE_HUNDRED.debug
     console.error(error)

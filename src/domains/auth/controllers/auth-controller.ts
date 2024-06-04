@@ -13,17 +13,20 @@ async function authenticateUser(req: Request, res: Response) {
     const authServiceId = `${demoId}-${v4()}`
 
     if (!!demoId) {
+      const firstName = demoId.split(' ')[0] ?? 'demo'
+      const lastName = demoId.split(' ')[1] ?? ''
+
       const result = await db.member.create({
         data: {
-          email: `${demoId.trim().toLowerCase()}@demo.com`,
-          firstName: demoId.split(' ')[0] ?? 'demo',
-          lastName: demoId.split(' ')[1] ?? '',
+          email: `${firstName}.${lastName}@demo.com`,
+          firstName,
+          lastName,
           authServiceId
         }
       })
 
       res.cookie('one_word_auth', result.id, {
-        maxAge: 900000,
+        maxAge: 900000000,
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production'
       })
@@ -42,8 +45,6 @@ async function authenticateUser(req: Request, res: Response) {
 async function getAuthenticatedUser(req: Request, res: Response) {
   try {
     const userIdOnCookie = getUserCookie(req)
-
-    console.log({ userIdOnCookie })
 
     const result = await db.member.findUnique({
       where: { id: userIdOnCookie }
