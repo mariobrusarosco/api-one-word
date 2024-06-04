@@ -181,7 +181,7 @@ async function updateSeat(req: Request, res: Response) {
     const seatId = body?.id as string
 
     if (!role) {
-      return res.status(400).json(ErrorMapper.MISSING_PROFILE_ROLE)
+      return res.status(400).json(ErrorMapper.MISSING_SEAT_ROLE)
     }
 
     const updateSeat = await db.tableSeat.update({
