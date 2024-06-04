@@ -5,7 +5,7 @@ import { v4 as uuidV4 } from 'uuid'
 import db from '../../../services/database'
 import { Prisma, TableRole } from '@prisma/client'
 import Logger from '../../../services/profiling'
-import { getUserCookie } from '@/domains/shared/utils/getUserCookie'
+import { getUserCookie } from '../../shared/utils/getUserCookie'
 
 async function getAllTables(req: Request, res: Response) {
   try {
