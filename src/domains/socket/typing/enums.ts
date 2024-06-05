@@ -4,9 +4,10 @@ export enum SocketEvents {
   CREATE_GAME = 'create_game',
   LEAVE_TABLE = 'leave-table',
   JOIN_TABLE = 'join-table',
-  JOIN_GAME_ROOM = 'join-game-room',
+  UPDATE_TABLE_PARTICIPANTS = 'update-table-participants',
+  JOIN_CHAT = 'join-chat',
+  LEAVE_CHAT = 'leave-chat',
   MESSAGE = 'message',
   NEW_CHAT_MESSAGE = 'new-chat-message',
-  UPDATE_CHAT_MESSAGES = 'update-chat-messages',
-  UPDATE_TABLE_PARTICIPANTS = 'update-table-participants'
+  UPDATE_CHAT_MESSAGES = 'update-chat-messages'
 }

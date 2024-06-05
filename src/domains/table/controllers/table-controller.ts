@@ -45,9 +45,14 @@ async function createTable(req: AuthenticatedRequest, res: Response) {
           }
         },
         channels: {
-          create: {
-            name: 'General'
-          }
+          create: [
+            {
+              name: 'general'
+            },
+            {
+              name: 'coffee break'
+            }
+          ]
         }
       }
     })

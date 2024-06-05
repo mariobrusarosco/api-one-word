@@ -28,13 +28,11 @@ export const startSocketServer = (
   socketServer.on('connection', async (socket: any) => {
     handler.joinTable(socket)
     handler.leaveTable(socket)
+    handler.joinChat(socket)
+    handler.leaveChat(socket)
     handler.chatMessage(socket)
     handler.disconnect(socket)
   })
-
-  const mainNamespace = socketServer.of('/')
-  mainNamespace.adapter.on('join-room', handler.notifyAllUsersInRoom())
-  mainNamespace.adapter.on('leave-room', handler.notifyAllUsersInRoom())
 
   return socketServer
 }
