@@ -2,12 +2,12 @@
 
 ## What
 
-A node API for the my side project named One Word [(for more info)](https://github.com/mariobrusarosco/one-word).
+A node API for my side project named One Word [(for more info)](https://github.com/mariobrusarosco/one-word).
 
 ## Why
 
-- One word is a side project where I intend to validate new libraries, frameworks and new things in general. This API will provide real endpoints, real requests so I have a grasp on what are their cons and pros as close as I can get in the real word.
-- I can have a basic understanding how a Back End structure supports a Front End Application.
+- One word is a side project where I intend to validate new libraries, frameworks, and new things in general. This API will provide real endpoints and real requests so I have a grasp on what are their cons and pros as close as I can get in the real world.
+- I can have a basic understanding of how a back-end structure supports a Front End Application.
 - I can grasp some ORM concepts and see their benefits in action.
 - I can learn and practice Typescript for an ORM (prisma).
 
@@ -26,7 +26,7 @@ By using:
 ## Getting Started
 
 - Clone the project
-- Open a **terminal**, go the root level of the project and install all dependecies by running:
+- Open a **terminal**, go to the root level of the project, and install all dependencies by running:
 
 ```bash
 yarn
@@ -69,13 +69,13 @@ yarn prisma migrate dev --name init
 
 ### Profiling and Logging
 
-This projects uses the _Sentry's Free Plan_
+This project uses the _Sentry's Free Plan_
 
 [URL](https://mario-79.sentry.io/issues/?project=4506356576747520&referrer=sidebar&statsPeriod=30d)
 
 ### Hosting the API
 
-I'm using **Railway** to host the project. The url is [https://api-one-word.up.railway.app/](https://api-one-word.up.railway.app/)
+I'm using **Railway** to host the project. The url is [https://api-one-word.mariobrusarosco.com/]([https://api-one-word.up.railway.app/](https://api-one-word.mariobrusarosco.com/))
 
 ---
 
