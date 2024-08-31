@@ -5,17 +5,17 @@ import 'dotenv/config'
 const Sentry = require('@sentry/node')
 import express from 'express'
 import cookieParser from 'cookie-parser'
-import TableRouting from './domains/table/routes'
-import ChannelRouting from './domains/channel/routes'
-import MessageRouting from './domains/message/routes'
+import TableRouting from '@/domains/table/routes'
+import ChannelRouting from '@/domains/channel/routes'
+import MessageRouting from '@/domains/message/routes'
 
-import logger from './middlewares/logger'
-import { startSocketServer } from './services/app-initialization/start-socket-server'
-import { startWebServer } from './services/app-initialization/start-web-server'
-import middleware from './middlewares/authentication'
-import accessControl from './middlewares/access-control'
-import AuthenticationRouting from './domains/auth/routes'
-import authentication from './middlewares/authentication'
+import logger from '@/domains/shared/logger'
+import { startSocketServer } from '@/services/app-initialization/start-socket-server'
+import { startWebServer } from '@/services/app-initialization/start-web-server'
+import middleware from '@/middlewares/authentication'
+import accessControl from '@/middlewares/access-control'
+import AuthenticationRouting from '@/domains/auth/routes'
+import authentication from '@/middlewares/authentication'
 
 // TODO Change to ESM import
 const cors = require('cors')
