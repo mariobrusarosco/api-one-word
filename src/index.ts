@@ -36,7 +36,6 @@ app.use(accessControl)
 app.use(cookieParser() as any)
 app.use(express.json())
 app.use(logger)
-app.use(authentication)
 
 // Routing
 TableRouting(app)
