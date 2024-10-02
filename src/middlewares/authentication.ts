@@ -3,8 +3,10 @@ import { GlobalErrorMapper } from '../domains/shared/error-handling/mapper'
 import { Member } from '@prisma/client'
 import jwt from 'jsonwebtoken'
 
-export interface AuthenticatedRequest extends Request {
-  authenticatedUser: Member
+const SECRET = process.env.JWT_SECRET || ''
+
+interface CustomRequest extends Request {
+  isPublic?: boolean
 }
 
 const skipAuthWhenCreatingAnAccount = (req: Request) => {
@@ -14,22 +16,24 @@ const skipAuthWhenCreatingAnAccount = (req: Request) => {
   return isAuthViaDemo ? true : false
 }
 
-const middleware = (req: Request, res: Response, next: NextFunction) => {
+const authMiddleware = (req: CustomRequest, res: Response, next: NextFunction) => {
   if (skipAuthWhenCreatingAnAccount(req)) return next()
 
   try {
-    const secret = process.env.JWT_SECRET || ''
-    const authCookie = req.cookies['one_word_auth'] || ''
-    const decodedToken = jwt.verify(authCookie, secret) as Member
-    const authenticatedReq = req as AuthenticatedRequest
+    console.log('------ AUTH MIDDLEWARE ------', req?.isPublic)
 
-    authenticatedReq.authenticatedUser = decodedToken
+    // const authCookie = Auth.getAuthCookie(req)
+    // const decodedToken = jwt.verify(authCookie, SECRET) as Member
+    // const authenticatedReq = req as AuthenticatedRequest
+    // authenticatedReq.authenticatedUser = decodedToken
+
     next()
   } catch (error) {
+    console.log('[AUTH MIDDLEWARE]', error)
     return res
       .status(GlobalErrorMapper.NOT_AUTHORIZED.status)
       .send(GlobalErrorMapper.NOT_AUTHORIZED.userMessage)
   }
 }
 
-export default middleware
+export default authMiddleware
