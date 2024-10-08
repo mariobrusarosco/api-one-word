@@ -3,16 +3,17 @@ generator client {
 }
 
 datasource db {
-  provider     = "postgresql"
   url          = env("DATABASE_URL")
+  provider     = "mysql"
   relationMode = "prisma"
 }
 
 model Member {
   id                String         @id @default(uuid())
   authServiceId     String         @unique
-  firstName         String
-  lastName          String
+  nickname          String
+  firstName         String?
+  lastName          String?
   email             String
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
@@ -29,7 +30,6 @@ model TableSeat {
   updatedAt DateTime  @updatedAt
   member    Member    @relation(fields: [memberId], references: [authServiceId], onDelete: Cascade)
   table     Table     @relation(fields: [tableId], references: [id], onDelete: Cascade)
-  tempId    String?
 
   @@index([memberId])
   @@index([tableId])

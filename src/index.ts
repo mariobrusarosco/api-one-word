@@ -9,14 +9,12 @@ import TableRouting from '@/domains/table/routes'
 import ChannelRouting from '@/domains/channel/routes'
 import MessageRouting from '@/domains/message/routes'
 
-import logger from '@/domains/shared/logger'
 import { startSocketServer } from '@/services/app-initialization/start-socket-server'
 import { startWebServer } from '@/services/app-initialization/start-web-server'
-import middleware from '@/middlewares/authentication'
 import accessControl from '@/middlewares/access-control'
 import AuthenticationRouting from '@/domains/auth/routes'
-import authentication from '@/middlewares/authentication'
-
+import MemberRouting from '@/domains/member/routes'
+import Profiling from '@/services/profiling'
 // TODO Change to ESM import
 const cors = require('cors')
 const app = express()
@@ -35,13 +33,14 @@ app.use(
 app.use(accessControl)
 app.use(cookieParser() as any)
 app.use(express.json())
-app.use(logger)
+app.use(Profiling.middleware)
 
 // Routing
 TableRouting(app)
 ChannelRouting(app)
 MessageRouting(app)
 AuthenticationRouting(app)
+MemberRouting(app)
 
 Sentry.setupExpressErrorHandler(app)
 // Optional fallthrough error handler

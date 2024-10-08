@@ -5,8 +5,7 @@ import { v4 as uuidV4 } from 'uuid'
 import db from '../../../services/database'
 import { Prisma, TableRole } from '@prisma/client'
 import Logger from '../../../services/profiling'
-import { Auth } from '../../shared/utils/auth'
-import { AuthenticatedRequest } from '@/middlewares/authentication'
+import { AuthenticatedRequest } from '@/domains/shared/typing/express'
 
 async function getAllTables(req: AuthenticatedRequest, res: Response) {
   try {

@@ -3,8 +3,8 @@ import { GlobalErrorMapper } from '../../shared/error-handling/mapper'
 import { ErrorMapper } from '../error-handling/mapper'
 import db from '../../../services/database'
 import { Prisma } from '@prisma/client'
-import { AppRequest } from 'src/domains/shared/typing/express'
-import { AuthenticatedRequest } from '@/middlewares/authentication'
+import { AppRequest } from '@/domains/shared/typing/express'
+import { AuthenticatedRequest } from '@/domains/shared/typing/express'
 
 async function createMessage(req: AuthenticatedRequest, res: Response) {
   const body = req?.body as Prisma.MessageCreateInput

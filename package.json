@@ -4,10 +4,10 @@
   "description": "API - One Word",
   "main": "index.js",
   "scripts": {
-    "build": "rimraf ./dist && yarn generate-schema && tsc",
+    "build": "rimraf ./dist && yarn generate-schema && tsc && tsc-alias",
     "dev": "ts-node-dev -r tsconfig-paths/register ./src/index.ts",
     "start": "node -r dotenv/config ./dist/index.js",
-    "compile": "tsc",
+    "compile": "tsc && tsc-alias",
     "studio": "prisma studio --schema=./src/prisma/schema.prisma",
     "generate-schema": "prisma generate --schema=./src/prisma/schema.prisma",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org mario-79 --project one-word ./dist && sentry-cli sourcemaps upload --org mario-79 --project one-word ./dist"
@@ -55,6 +55,7 @@
     "rimraf": "^3.0.2",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
+    "tsc-alias": "^1.8.10",
     "tsconfig-paths": "^4.2.0"
   }
 }
