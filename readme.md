@@ -18,7 +18,7 @@ By using:
 1. **Node** with **Express**
 2. **Typescript**
 3. **Prisma** as **ORM** connected to a Database
-4. **PlanetScale** as a **MySQL** database
+4. **Neon** as a **Postgres** database
 5. **Socket.IO** as WebSocket Client
 6. **Railway** as Host
 7. Providing a swagger via **Postman**
@@ -75,7 +75,7 @@ This project uses the _Sentry's Free Plan_
 
 ### Hosting the API
 
-I'm using **Railway** to host the project. The url is [https://api-one-word.mariobrusarosco.com/]([https://api-one-word.up.railway.app/](https://api-one-word.mariobrusarosco.com/))
+I'm using **Railway** to host the project. The url is [https://api-one-word.mariobrusarosco.com/](<[https://api-one-word.up.railway.app/](https://api-one-word.mariobrusarosco.com/)>)
 
 ---
 

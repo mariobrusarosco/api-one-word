@@ -4,15 +4,13 @@ import { ErrorMapper } from '../error-handling/mapper'
 import db from '../../../services/database'
 import Logger from '../../../services/profiling'
 import { v4 } from 'uuid'
-import { AuthenticatedRequest } from '@/domains/shared/typing/express'
 import { Utils } from '@/domains/auth/utils'
-import { getAuthCookie } from '@/domains/auth/middleware'
 import { IAuthUser } from '@/domains/auth/typing/interfaces'
 import { AuthController } from '@/domains/auth/controllers'
 
-const getMember = async (req: AuthenticatedRequest, res: Response) => {
+const getMember = async (req: Request, res: Response) => {
   try {
-    const authCookie = getAuthCookie(req)
+    const authCookie = Utils.getUserCookie(req)
     const authServiceId = Utils.decodeMemberToken(authCookie) as { id: string }
 
     Logger.log(`[DEBUG] getMember ${authServiceId} `)
@@ -46,7 +44,7 @@ const getMember = async (req: AuthenticatedRequest, res: Response) => {
   }
 }
 
-const createMember = async (req: AuthenticatedRequest, res: Response) => {
+const createMember = async (req: Request, res: Response) => {
   try {
     const body = req?.body as IAuthUser
 

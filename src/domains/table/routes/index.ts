@@ -1,13 +1,14 @@
 import express from 'express'
 import type { Express } from 'express'
 import TableController from '../controllers/table-controller'
+import { AuthMiddleware } from '@/domains/auth/middleware'
 
 // TODO Type the Request Handler
 const TableRouting = (app: Express) => {
   const tableRouter = express.Router()
 
-  tableRouter.post('/', TableController.createTable as any)
-  tableRouter.get('/', TableController.getAllTables as any)
+  tableRouter.post('/', TableController.createTable)
+  tableRouter.get('/', AuthMiddleware, TableController.getAllTables)
   tableRouter.patch('/:tableId', TableController.updateTable as any)
   tableRouter.get('/:tableId', TableController.getTable as any)
   tableRouter.post('/:tableId/invite', TableController.updateTableInvite)

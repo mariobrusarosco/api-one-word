@@ -1,20 +1,13 @@
-import { Member } from '@prisma/client'
-import { NextFunction, Request, Response } from 'express'
+import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
-import { GlobalErrorMapper } from '@/domains/shared/error-handling/mapper'
 
 const { JWT_SECRET, NODE_ENV: ENVIRONMENT, MEMBER_PUBLIC_ID_COOKIE } = process.env
-
-interface CustomRequest extends Request {
-  isPublic?: boolean
-}
 
 const decodeMemberToken = (token: string) => {
   return jwt.verify(token || '', JWT_SECRET || '')
 }
 
-const getUserCookie = (req: CustomRequest) =>
-  req.cookies[MEMBER_PUBLIC_ID_COOKIE || ''] || null
+const getUserCookie = (req: Request) => req.cookies[MEMBER_PUBLIC_ID_COOKIE || ''] || null
 
 const signUserCookieBased = (publicId: string, res: Response) => {
   if (!res || !publicId || !JWT_SECRET) return null
@@ -29,31 +22,20 @@ const signUserCookieBased = (publicId: string, res: Response) => {
   return token
 }
 
-// const clearUserCookie = (res: Response) => {
-//   res.clearCookie(MEMBER_PUBLIC_ID_COOKIE)
-// }
+const clearUserCookie = (res: Response) => {
+  res.clearCookie(MEMBER_PUBLIC_ID_COOKIE || '')
+}
+
+const getUserIdFromRequest = (req: Request) => {
+  return 'demo_id' in req?.authenticatedUser
+    ? req.authenticatedUser.demo_id
+    : req.authenticatedUser.id
+}
 
 export const Utils = {
-  // clearUserCookie,
+  getUserIdFromRequest,
+  clearUserCookie,
   getUserCookie,
   signUserCookieBased,
   decodeMemberToken
 }
-
-// const authMiddleware = (req: CustomRequest, res: Response, next: NextFunction) => {
-//   try {
-//     console.log('------ AUTH MIDDLEWARE ------', req?.isPublic)
-
-//     const authCookie = Utils.getAuthCookie(req)
-
-//     // const authenticatedReq = req as AuthenticatedRequest
-//     // authenticatedReq.authenticatedUser = decodedToken
-
-//     next()
-//   } catch (error) {
-//     console.log('[AUTH MIDDLEWARE]', error)
-//     return res
-//       .status(GlobalErrorMapper.NOT_AUTHORIZED.status)
-//       .send(GlobalErrorMapper.NOT_AUTHORIZED.userMessage)
-//   }
-// }

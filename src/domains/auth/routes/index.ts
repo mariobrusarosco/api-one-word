@@ -1,7 +1,6 @@
 import express from 'express'
 import type { Express } from 'express'
 
-import { Middleware } from '../middleware'
 import { AuthController } from '../controllers'
 
 // TODO Type the Request Handler
