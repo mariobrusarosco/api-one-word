@@ -7,7 +7,7 @@ import { AuthController } from '../controllers'
 const AuthenticationRouting = (app: Express) => {
   const authRouter = express.Router()
 
-  authRouter.get('/', AuthController.authenticateUser as any)
+  authRouter.post('/', AuthController.authenticateUser as any)
   // authRouter.get(
   //   '/',
   //   Middleware.requireAuthentication,

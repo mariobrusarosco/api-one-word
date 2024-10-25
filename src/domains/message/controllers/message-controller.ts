@@ -8,7 +8,7 @@ import { Utils } from '@/domains/auth/utils'
 async function createMessage(req: Request, res: Response) {
   const body = req?.body as Prisma.MessageCreateInput
   const params = req?.params as { channelId: string }
-  const memberId = Utils.getUserIdFromRequest(req)
+  const memberId = Utils.getAuthenticatedUserId(req)
   const memberFullName = `${memberId} ${memberId}`
 
   if (!body.content) {

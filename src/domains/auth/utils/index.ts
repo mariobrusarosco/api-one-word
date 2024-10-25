@@ -9,10 +9,12 @@ const decodeMemberToken = (token: string) => {
 
 const getUserCookie = (req: Request) => req.cookies[MEMBER_PUBLIC_ID_COOKIE || ''] || null
 
-const signUserCookieBased = (publicId: string, res: Response) => {
-  if (!res || !publicId || !JWT_SECRET) return null
+const signUserCookieBased = (authId: string, res: Response) => {
+  if (!res || !authId || !JWT_SECRET) return null
 
-  const token = jwt.sign(publicId, JWT_SECRET, { expiresIn: '3d' })
+  console.log({ authId, JWT_SECRET })
+
+  const token = jwt.sign({ authId }, JWT_SECRET, { expiresIn: '7d' })
 
   res.cookie(MEMBER_PUBLIC_ID_COOKIE || '', token, {
     httpOnly: true,
@@ -26,14 +28,14 @@ const clearUserCookie = (res: Response) => {
   res.clearCookie(MEMBER_PUBLIC_ID_COOKIE || '')
 }
 
-const getUserIdFromRequest = (req: Request) => {
+const getAuthenticatedUserId = (req: Request) => {
   return 'demo_id' in req?.authenticatedUser
     ? req.authenticatedUser.demo_id
     : req.authenticatedUser.id
 }
 
 export const Utils = {
-  getUserIdFromRequest,
+  getAuthenticatedUserId,
   clearUserCookie,
   getUserCookie,
   signUserCookieBased,

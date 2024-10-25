@@ -9,11 +9,21 @@ import { IAuthUser } from '../typing/interfaces'
 
 async function authenticateUser(req: Request, res: Response) {
   try {
-    const body = req?.body as IAuthUser
-    const publicId = body.sub
-    const token = Utils.signUserCookieBased(publicId, res)
+    const body = req?.body
+    const authId = body.authId as string
 
-    return res.status(200).send(token)
+    const member = await db.member.findUnique({
+      where: { authServiceId: authId }
+    })
+
+    if (!member) {
+      res.status(ErrorMapper.NOT_FOUND.status).send(ErrorMapper.NOT_FOUND.userMessage)
+      return
+    }
+
+    const token = Utils.signUserCookieBased(authId, res)
+
+    res.status(200).send(token)
   } catch (error: any) {
     console.error(`[AUTH - POST] ${error}`)
 

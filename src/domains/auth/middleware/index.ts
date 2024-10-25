@@ -7,7 +7,7 @@ const { NODE_ENV, DEMO_MEMBER_ID } = process.env
 export const AuthMiddleware = (req: Request, res: Response, next: NextFunction) => {
   try {
     const byPassAuth = NODE_ENV === 'demo'
-    console.log('------ AUTH MIDDLEWARE ------', byPassAuth, DEMO_MEMBER_ID)
+    console.log('------ AUTH MIDDLEWARE ------', { byPassAuth, DEMO_MEMBER_ID, NODE_ENV })
 
     if (byPassAuth) {
       req.authenticatedUser = { demo_id: DEMO_MEMBER_ID || '' } as DemoMember
