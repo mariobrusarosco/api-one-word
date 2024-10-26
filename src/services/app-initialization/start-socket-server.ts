@@ -15,7 +15,10 @@ export const startSocketServer = (
     }
   })
 
-  instrument(socketServer, { auth: false, mode: 'development' })
+  instrument(socketServer, {
+    auth: false,
+    mode: 'development'
+  })
 
   // Middlewares
   socketServer.use((socket: any, next) => {
