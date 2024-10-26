@@ -26,7 +26,7 @@ const authenticateUser: RequestHandler = async function (req: Request, res: Resp
 
     res.status(200).send(token)
   } catch (error: any) {
-    console.error(`[AUTH - POST] ${error}`)
+    console.error(`[AUTH - GET] ${error}`)
 
     res
       .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)

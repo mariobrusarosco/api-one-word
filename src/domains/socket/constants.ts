@@ -4,5 +4,6 @@ export const CorsAllowedOrigins = [
   'https://admin.socket.io',
   'http://localhost:5000',
   'https://one-word-game.netlify.app',
+  'https://one-word-demo.mariobrusarosco.com',
   'https://one-word.mariobrusarosco.com'
 ]
