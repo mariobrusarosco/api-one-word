@@ -10,6 +10,7 @@ import { Utils } from '@/domains/auth/utils'
 const getAllTables: RequestHandler = async function (req: Request, res: Response) {
   try {
     const memberId = Utils.getAuthenticatedUserId(req, res)
+    console.log({ memberId })
     const results = await db.table.findMany({
       where: { seats: { some: { memberId } } },
       include: { seats: true, channels: true }

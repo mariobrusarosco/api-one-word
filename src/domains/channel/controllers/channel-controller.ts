@@ -1,14 +1,10 @@
-import { NextFunction, Request, RequestHandler, Response } from 'express'
+import { Request, RequestHandler, Response } from 'express'
 import { GlobalErrorMapper } from '../../shared/error-handling/mapper'
 import { ErrorMapper } from '../error-handling/mapper'
 import db from '../../../services/database'
 import { Prisma } from '@prisma/client'
 
-const getChannelById: RequestHandler = async function (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+const getChannelById: RequestHandler = async function (req: Request, res: Response) {
   const channeld = req?.params.channelId
 
   if (!channeld) {
