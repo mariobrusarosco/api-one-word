@@ -18,10 +18,12 @@
     "paths": {
       "@/*": ["./*"]
     },
-    "sourceRoot": "/"
+    "sourceRoot": "/",
+    "typeRoots": ["./src/types", "./node_modules/@types"]
   },
   "include": ["src", "global.d.ts"],
   "exclude": ["node_modules", "dist"],
+  "files": ["src/types/express/index.d.ts"],
   "ts-node": {
     "require": ["tsconfig-paths/register"]
   }

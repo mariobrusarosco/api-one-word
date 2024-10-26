@@ -1,15 +1,15 @@
-import { Response } from 'express'
+import { Response, Request } from 'express'
 import { GlobalErrorMapper } from '../../shared/error-handling/mapper'
 import { ErrorMapper } from '../error-handling/mapper'
 import db from '../../../services/database'
 import { Prisma } from '@prisma/client'
-import { AppRequest } from '@/domains/shared/typing/express'
-import { AuthenticatedRequest } from '@/domains/shared/typing/express'
+import { Utils } from '@/domains/auth/utils'
 
-async function createMessage(req: AuthenticatedRequest, res: Response) {
+async function createMessage(req: Request, res: Response) {
   const body = req?.body as Prisma.MessageCreateInput
   const params = req?.params as { channelId: string }
-  const memberFullName = `${req.authenticatedUser?.firstName} ${req.authenticatedUser?.lastName}`
+  const memberId = Utils.getAuthenticatedUserId(req)
+  const memberFullName = `${memberId} ${memberId}`
 
   if (!body.content) {
     return res.status(400).json({ message: ErrorMapper.MISSING_CONTENT })
@@ -24,7 +24,7 @@ async function createMessage(req: AuthenticatedRequest, res: Response) {
       data: {
         content: body.content,
         channelId: params.channelId,
-        memberId: req.authenticatedUser.id,
+        memberId,
         memberFullName: memberFullName
       }
     })
@@ -37,9 +37,10 @@ async function createMessage(req: AuthenticatedRequest, res: Response) {
   }
 }
 
-async function getChannelMessages(req: AppRequest, res: Response) {
+async function getChannelMessages(req: Request, res: Response) {
   try {
-    const searchParams = new URLSearchParams(req.query)
+    const query = req.query as unknown as string
+    const searchParams = new URLSearchParams(query)
     const params = req?.params as { channelId: string }
 
     let messages = null

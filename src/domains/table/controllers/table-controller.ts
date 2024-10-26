@@ -1,36 +1,36 @@
-import { Request, Response } from 'express'
+import { Request, RequestHandler, Response } from 'express'
 import { GlobalErrorMapper } from '../../shared/error-handling/mapper'
 import { ErrorMapper } from '../error-handling/mapper'
 import { v4 as uuidV4 } from 'uuid'
 import db from '../../../services/database'
 import { Prisma, TableRole } from '@prisma/client'
 import Logger from '../../../services/profiling'
-import { AuthenticatedRequest } from '@/domains/shared/typing/express'
+import { Utils } from '@/domains/auth/utils'
 
-async function getAllTables(req: AuthenticatedRequest, res: Response) {
+const getAllTables: RequestHandler = async function (req: Request, res: Response) {
   try {
+    const memberId = Utils.getAuthenticatedUserId(req)
     const results = await db.table.findMany({
-      where: { seats: { some: { memberId: req.authenticatedUser.id } } },
+      where: { seats: { some: { memberId } } },
       include: { seats: true, channels: true }
     })
-    return res.status(200).send(results)
+    res.status(200).send(results)
   } catch (error) {
     // log here: ErrorMapper.BIG_FIVE_HUNDRED.debug
     Logger.error(`[TABLES - GET] ${error}`)
-    return res
+    res
       .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
       .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.userMessage)
   }
 }
 
-async function createTable(req: AuthenticatedRequest, res: Response) {
+const createTable: RequestHandler = async function (req: Request, res: Response) {
   try {
+    const memberId = Utils.getAuthenticatedUserId(req)
     const body = req?.body as Prisma.TableCreateInput
 
     if (!body?.name) {
-      return res
-        .status(400)
-        .json({ message: 'You must provide a name to create a table' })
+      res.status(400).json({ message: 'You must provide a name to create a table' })
     }
 
     const newTable = await db.table.create({
@@ -39,7 +39,7 @@ async function createTable(req: AuthenticatedRequest, res: Response) {
         inviteCode: uuidV4(),
         seats: {
           create: {
-            memberId: req.authenticatedUser.id,
+            memberId,
             role: TableRole.ADMIN
           }
         },
@@ -59,10 +59,10 @@ async function createTable(req: AuthenticatedRequest, res: Response) {
     res.json(newTable)
   } catch (error: any) {
     if (error?.value === 'NULL') {
-      return res.status(ErrorMapper.NOT_FOUND.status).send(ErrorMapper.NOT_FOUND.status)
+      res.status(ErrorMapper.NOT_FOUND.status).send(ErrorMapper.NOT_FOUND.status)
     } else {
-      console.error(error)
       // log here: ErrorMapper.BIG_FIVE_HUNDRED.debug
+      console.error(error)
       res
         .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
         .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.debug)
@@ -70,17 +70,18 @@ async function createTable(req: AuthenticatedRequest, res: Response) {
   }
 }
 
-async function getTable(req: AuthenticatedRequest, res: Response) {
+const getTable: RequestHandler = async function (req: Request, res: Response) {
   const tableId = req?.params.tableId
+  const memberId = Utils.getAuthenticatedUserId(req)
 
   const tableSeat = await db.tableSeat.findFirst({
-    where: { tableId, memberId: req.authenticatedUser.id }
+    where: { tableId, memberId }
   })
 
   if (!tableSeat) {
-    return res
-      .status(ErrorMapper.MISSING_SEAT.status)
-      .send(ErrorMapper.MISSING_SEAT.userMessage)
+    res.status(ErrorMapper.MISSING_SEAT.status).send(ErrorMapper.MISSING_SEAT.userMessage)
+
+    return
   }
 
   try {
@@ -89,7 +90,7 @@ async function getTable(req: AuthenticatedRequest, res: Response) {
       include: { channels: true }
     })
 
-    return res.status(200).send(result)
+    res.status(200).send(result)
   } catch (error: any) {
     // log here: ErrorMapper.BIG_FIVE_HUNDRED.debug
     res
@@ -98,13 +99,15 @@ async function getTable(req: AuthenticatedRequest, res: Response) {
   }
 }
 
-async function updateTable(req: Request, res: Response) {
+const updateTable: RequestHandler = async function (req: Request, res: Response) {
   try {
     const body = req?.body as Prisma.TableUpdateInput
     const tableNewName = body?.name
 
     if (!tableNewName) {
-      return res.status(400).json(ErrorMapper.MISSING_NAME)
+      res.status(400).json(ErrorMapper.MISSING_NAME)
+
+      return
     }
 
     const tableId = req?.params.tableId
@@ -116,13 +119,13 @@ async function updateTable(req: Request, res: Response) {
 
     res.status(200).json(result)
   } catch (error) {
-    return res
+    res
       .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
       .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.userMessage)
   }
 }
 
-async function updateTableInvite(req: Request, res: Response) {
+const updateTableInvite: RequestHandler = async function (req: Request, res: Response) {
   try {
     const tableId = req?.params.tableId
 
@@ -140,7 +143,7 @@ async function updateTableInvite(req: Request, res: Response) {
   }
 }
 
-async function joinTable(req: AuthenticatedRequest, res: Response) {
+const joinTable: RequestHandler = async function (req: Request, res: Response) {
   try {
     const tableId = req?.params.tableId
     const body = req?.body as { email: string }
@@ -148,10 +151,9 @@ async function joinTable(req: AuthenticatedRequest, res: Response) {
 
     const userToJoin = await db.member.findFirst({ where: { email } })
     if (!userToJoin) {
-      return res.status(404).json({ message: 'member not found' })
+      res.status(404).json(ErrorMapper.MEMBER_NOT_FOUND)
+      return
     }
-
-    console.log('[DEBUG] ------ USER TO JOIN', userToJoin)
 
     const table = await db.table.update({
       where: { id: tableId },
@@ -175,14 +177,14 @@ async function joinTable(req: AuthenticatedRequest, res: Response) {
   }
 }
 
-async function updateSeat(req: Request, res: Response) {
+const updateSeat: RequestHandler = async function (req: Request, res: Response) {
   try {
     const body = req?.body as Prisma.TableSeatUpdateInput
     const role = body?.role as TableRole
     const seatId = body?.id as string
 
     if (!role) {
-      return res.status(400).json(ErrorMapper.MISSING_SEAT_ROLE)
+      res.status(400).json(ErrorMapper.MISSING_SEAT_ROLE)
     }
 
     const updateSeat = await db.tableSeat.update({
@@ -193,7 +195,7 @@ async function updateSeat(req: Request, res: Response) {
     res.status(200).json(updateSeat)
   } catch (error) {
     console.log(error)
-    return res
+    res
       .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
       .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.userMessage)
   }

@@ -19,3 +19,9 @@ one-word.code-workspace
 
 # Sentry Config File
 .sentryclirc
+
+
+# Env files
+.env.*.local
+.env.demo
+.env.production

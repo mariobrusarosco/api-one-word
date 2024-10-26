@@ -18,5 +18,10 @@ export const ErrorMapper = {
     status: 400,
     debug: 'seat_not_found',
     userMessage: 'You are not a member of this table.'
+  },
+  MEMBER_NOT_FOUND: {
+    status: 404,
+    debug: 'member_not_found',
+    userMessage: 'We could not identify this email as a valid member.'
   }
 }

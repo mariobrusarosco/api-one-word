@@ -10,3 +10,7 @@ interface IOAuthUser {
 }
 
 export type IAuthUser = IOAuthUser
+
+export interface DemoMember {
+  demo_id: string
+}
