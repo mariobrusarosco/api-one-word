@@ -1,6 +1,6 @@
 {
   "name": "api-one-word",
-  "version": "0.16.0",
+  "version": "1.0.0",
   "description": "API - One Word",
   "main": "index.js",
   "scripts": {
