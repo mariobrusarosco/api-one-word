@@ -1,3 +1,5 @@
+import { GlobalErrorMapper } from '@/domains/shared/error-handling/mapper'
+import { error } from 'console'
 import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 
@@ -28,10 +30,18 @@ const clearUserCookie = (res: Response) => {
   res.clearCookie(MEMBER_PUBLIC_ID_COOKIE || '')
 }
 
-const getAuthenticatedUserId = (req: Request) => {
-  return 'demo_id' in req?.authenticatedUser
-    ? req.authenticatedUser.demo_id
-    : req.authenticatedUser.id
+const getAuthenticatedUserId = (req: Request, res: Response) => {
+  try {
+    return 'demo_id' in req?.authenticatedUser
+      ? req.authenticatedUser.demo_id
+      : req.authenticatedUser.id
+  } catch (e) {
+    res
+      .status(GlobalErrorMapper.NOT_AUTHORIZED.status)
+      .send(GlobalErrorMapper.NOT_AUTHORIZED.userMessage)
+
+    throw e
+  }
 }
 
 export const Utils = {

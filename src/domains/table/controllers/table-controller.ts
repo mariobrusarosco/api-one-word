@@ -9,7 +9,7 @@ import { Utils } from '@/domains/auth/utils'
 
 const getAllTables: RequestHandler = async function (req: Request, res: Response) {
   try {
-    const memberId = Utils.getAuthenticatedUserId(req)
+    const memberId = Utils.getAuthenticatedUserId(req, res)
     const results = await db.table.findMany({
       where: { seats: { some: { memberId } } },
       include: { seats: true, channels: true }
@@ -26,7 +26,7 @@ const getAllTables: RequestHandler = async function (req: Request, res: Response
 
 const createTable: RequestHandler = async function (req: Request, res: Response) {
   try {
-    const memberId = Utils.getAuthenticatedUserId(req)
+    const memberId = Utils.getAuthenticatedUserId(req, res)
     const body = req?.body as Prisma.TableCreateInput
 
     if (!body?.name) {
@@ -71,20 +71,22 @@ const createTable: RequestHandler = async function (req: Request, res: Response)
 }
 
 const getTable: RequestHandler = async function (req: Request, res: Response) {
-  const tableId = req?.params.tableId
-  const memberId = Utils.getAuthenticatedUserId(req)
-
-  const tableSeat = await db.tableSeat.findFirst({
-    where: { tableId, memberId }
-  })
-
-  if (!tableSeat) {
-    res.status(ErrorMapper.MISSING_SEAT.status).send(ErrorMapper.MISSING_SEAT.userMessage)
-
-    return
-  }
-
   try {
+    const tableId = req?.params.tableId
+    const memberId = Utils.getAuthenticatedUserId(req, res)
+
+    const tableSeat = await db.tableSeat.findFirst({
+      where: { tableId, memberId }
+    })
+
+    if (!tableSeat) {
+      res
+        .status(ErrorMapper.MISSING_SEAT.status)
+        .send(ErrorMapper.MISSING_SEAT.userMessage)
+
+      return
+    }
+
     const result = await db.table.findUnique({
       where: { id: tableId },
       include: { channels: true }

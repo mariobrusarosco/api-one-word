@@ -1,25 +1,27 @@
-import { Response, Request } from 'express'
+import { Response, Request, RequestHandler } from 'express'
 import { GlobalErrorMapper } from '../../shared/error-handling/mapper'
 import { ErrorMapper } from '../error-handling/mapper'
 import db from '../../../services/database'
 import { Prisma } from '@prisma/client'
 import { Utils } from '@/domains/auth/utils'
 
-async function createMessage(req: Request, res: Response) {
-  const body = req?.body as Prisma.MessageCreateInput
-  const params = req?.params as { channelId: string }
-  const memberId = Utils.getAuthenticatedUserId(req)
-  const memberFullName = `${memberId} ${memberId}`
-
-  if (!body.content) {
-    return res.status(400).json({ message: ErrorMapper.MISSING_CONTENT })
-  }
-
-  if (!params.channelId) {
-    return res.status(400).json({ message: ErrorMapper.MISSING_CHANNEL_ID })
-  }
-
+const createMessage: RequestHandler = async function (req: Request, res: Response) {
   try {
+    const body = req?.body as Prisma.MessageCreateInput
+    const params = req?.params as { channelId: string }
+    const memberId = Utils.getAuthenticatedUserId(req, res)
+    const memberFullName = `${memberId} ${memberId}`
+
+    if (!body.content) {
+      res.status(400).json({ message: ErrorMapper.MISSING_CONTENT })
+      return
+    }
+
+    if (!params.channelId) {
+      res.status(400).json({ message: ErrorMapper.MISSING_CHANNEL_ID })
+      return
+    }
+
     const newMessage = await db.message.create({
       data: {
         content: body.content,
@@ -29,15 +31,15 @@ async function createMessage(req: Request, res: Response) {
       }
     })
 
-    return res.json(newMessage)
+    res.json(newMessage)
   } catch (error) {
-    return res
+    res
       .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
       .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.userMessage)
   }
 }
 
-async function getChannelMessages(req: Request, res: Response) {
+const getChannelMessages: RequestHandler = async function (req: Request, res: Response) {
   try {
     const query = req.query as unknown as string
     const searchParams = new URLSearchParams(query)
@@ -70,10 +72,10 @@ async function getChannelMessages(req: Request, res: Response) {
     const lastPostInResults = messages[0]
     const lastCursor = messages.length === take ? lastPostInResults?.id : null
 
-    return res.json({ messages, lastCursor })
+    res.json({ messages, lastCursor })
   } catch (error) {
     console.log({ error })
-    return res
+    res
       .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
       .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.userMessage)
   }
