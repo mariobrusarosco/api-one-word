@@ -1,10 +1,14 @@
-import { NextFunction, Request, Response } from 'express'
+import { NextFunction, Request, RequestHandler, Response } from 'express'
 import { GlobalErrorMapper } from '../../shared/error-handling/mapper'
 import { ErrorMapper } from '../error-handling/mapper'
 import db from '../../../services/database'
 import { Prisma } from '@prisma/client'
 
-async function getChannelById(req: Request, res: Response, next: NextFunction) {
+const getChannelById: RequestHandler = async function (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const channeld = req?.params.channelId
 
   if (!channeld) {
@@ -40,7 +44,7 @@ async function getChannelById(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-async function createChannel(req: Request, res: Response) {
+const createChannel: RequestHandler = async function (req: Request, res: Response) {
   const body = req?.body as Prisma.ChannelCreateInput & { tableId: string }
 
   if (!body.name) {
@@ -56,7 +60,8 @@ async function createChannel(req: Request, res: Response) {
   try {
     const existingChannel = await db.channel.findFirst({
       where: {
-        name: body.name
+        name: body.name,
+        tableId: body.tableId
       }
     })
 
@@ -82,7 +87,7 @@ async function createChannel(req: Request, res: Response) {
   }
 }
 
-async function deleteChannel(req: Request, res: Response) {
+const deleteChannel: RequestHandler = async function (req: Request, res: Response) {
   const channeld = req?.params.channelId
 
   if (!channeld) {
@@ -116,26 +121,26 @@ async function deleteChannel(req: Request, res: Response) {
   }
 }
 
-async function updateChannel(req: Request, res: Response) {
-  const channeld = req?.params.channelId
-  if (!channeld) {
-    res
-      .status(ErrorMapper.MISSING_CHANNEL_ID.status)
-      .json(ErrorMapper.MISSING_CHANNEL_ID.userMessage)
-    return
-  }
-
-  const { tableId, name } = req?.body as Prisma.ChannelUpdateInput & { tableId: string }
-
-  if (!tableId) {
-    res
-      .status(ErrorMapper.MISSING_TABLE_ID.status)
-      .json(ErrorMapper.MISSING_TABLE_ID.userMessage)
-
-    return
-  }
-
+const updateChannel: RequestHandler = async function (req: Request, res: Response) {
   try {
+    const channeld = req?.params.channelId
+    if (!channeld) {
+      res
+        .status(ErrorMapper.MISSING_CHANNEL_ID.status)
+        .json(ErrorMapper.MISSING_CHANNEL_ID.userMessage)
+      return
+    }
+
+    const { tableId, name } = req?.body as Prisma.ChannelUpdateInput & { tableId: string }
+
+    if (!tableId) {
+      res
+        .status(ErrorMapper.MISSING_TABLE_ID.status)
+        .json(ErrorMapper.MISSING_TABLE_ID.userMessage)
+
+      return
+    }
+
     const result = await db.channel.update({
       where: { id: channeld },
       data: { name: name }
