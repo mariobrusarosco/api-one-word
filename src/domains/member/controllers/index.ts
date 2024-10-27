@@ -9,12 +9,12 @@ import { IAuthUser } from '@/domains/auth/typing/interfaces'
 const getMember: RequestHandler = async function (req: Request, res: Response) {
   try {
     const authCookie = Utils.getUserCookie(req)
-    const authServiceId = Utils.decodeMemberToken(authCookie) as { authId: string }
+    const publicId = Utils.decodeMemberToken(authCookie) as { authId: string }
 
-    Logger.log(`[DEBUG] getMember`, authServiceId.authId)
+    Logger.log(`[DEBUG] getMember`, publicId.authId)
 
     const member = await db.member.findUnique({
-      where: { authServiceId: authServiceId.authId }
+      where: { publicId: publicId.authId }
     })
 
     if (!member) {
@@ -43,7 +43,7 @@ const createMember: RequestHandler = async function (req: Request, res: Response
       data: {
         email: body.email,
         nickname: body.name || body.nickname || '',
-        authServiceId: body.sub
+        publicId: body.sub
       }
     })
 

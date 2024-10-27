@@ -10,10 +10,10 @@ import { IAuthUser } from '../typing/interfaces'
 const authenticateUser: RequestHandler = async function (req: Request, res: Response) {
   try {
     const query = req?.query
-    const authId = query.authId as string
+    const publicId = query.publicId as string
 
     const member = await db.member.findUnique({
-      where: { authServiceId: authId }
+      where: { publicId }
     })
 
     if (!member) {
@@ -22,7 +22,7 @@ const authenticateUser: RequestHandler = async function (req: Request, res: Resp
       return
     }
 
-    const token = Utils.signUserCookieBased(authId, res)
+    const token = Utils.signUserCookieBased(publicId, res)
 
     res.status(200).send(token)
   } catch (error: any) {

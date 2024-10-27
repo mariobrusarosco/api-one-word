@@ -15,6 +15,7 @@ import accessControl from '@/middlewares/access-control'
 import AuthenticationRouting from '@/domains/auth/routes'
 import MemberRouting from '@/domains/member/routes'
 import Profiling from '@/services/profiling'
+
 // TODO Change to ESM import
 const cors = require('cors')
 const app = express()
@@ -42,14 +43,7 @@ MessageRouting(app)
 AuthenticationRouting(app)
 MemberRouting(app)
 
-Sentry.setupExpressErrorHandler(app)
-// Optional fallthrough error handler
-// app.use(function onError(err, req, res: any) {
-//   // The error id is attached to `res.sentry` to be returned
-//   // and optionally displayed to the user for support.
-//   res.statusCode = 500
-//   res.end(res.sentry + '\n')
-// })
+// Sentry.setupExpressErrorHandler(app)
 
 async function startServers() {
   const server = startWebServer(app)
