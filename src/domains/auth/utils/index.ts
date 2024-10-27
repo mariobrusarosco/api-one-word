@@ -1,6 +1,7 @@
 import { GlobalErrorMapper } from '@/domains/shared/error-handling/mapper'
 import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
+import { AuthCookieContent } from '../typing/interfaces'
 
 const { JWT_SECRET, NODE_ENV: ENVIRONMENT, MEMBER_PUBLIC_ID_COOKIE } = process.env
 
@@ -10,10 +11,10 @@ const decodeMemberToken = (token: string) => {
 
 const getUserCookie = (req: Request) => req.cookies[MEMBER_PUBLIC_ID_COOKIE || ''] || null
 
-const signUserCookieBased = (authId: string, res: Response) => {
-  if (!res || !authId || !JWT_SECRET) return null
+const signUserCookieBased = (cookieContent: AuthCookieContent, res: Response) => {
+  if (!res || !cookieContent || !JWT_SECRET) return null
 
-  const token = jwt.sign({ authId }, JWT_SECRET, { expiresIn: '1d' })
+  const token = jwt.sign(cookieContent, JWT_SECRET, { expiresIn: '1d' })
 
   res.cookie(MEMBER_PUBLIC_ID_COOKIE || '', token, {
     httpOnly: true,
@@ -29,7 +30,7 @@ const clearUserCookie = (res: Response) => {
 
 const getAuthenticatedUserId = (req: Request, res: Response) => {
   try {
-    return req.authenticatedUser.id
+    return req.authenticatedUser.publicId
   } catch (e) {
     res
       .status(GlobalErrorMapper.NOT_AUTHORIZED.status)

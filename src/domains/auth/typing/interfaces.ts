@@ -1,3 +1,5 @@
+import { Member } from '@prisma/client'
+
 interface IOAuthUser {
   email: string
   name?: string
@@ -12,5 +14,8 @@ interface IOAuthUser {
 export type IAuthUser = IOAuthUser
 
 export interface DemoMember {
-  id: string
+  publicId: string
+  nickname?: string
 }
+
+export type AuthCookieContent = Pick<Member, 'publicId' | 'nickname'>

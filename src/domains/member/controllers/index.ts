@@ -3,18 +3,15 @@ import { GlobalErrorMapper } from '../../shared/error-handling/mapper'
 import { ErrorMapper } from '../error-handling/mapper'
 import db from '../../../services/database'
 import Logger from '../../../services/profiling'
-import { Utils } from '@/domains/auth/utils'
 import { IAuthUser } from '@/domains/auth/typing/interfaces'
 
 const getMember: RequestHandler = async function (req: Request, res: Response) {
   try {
-    const authCookie = Utils.getUserCookie(req)
-    const publicId = Utils.decodeMemberToken(authCookie) as { authId: string }
-
-    Logger.log(`[DEBUG] getMember`, publicId.authId)
+    const { publicId } = req.authenticatedUser
+    Logger.log(`[DEBUG] getMember`, publicId)
 
     const member = await db.member.findUnique({
-      where: { publicId: publicId.authId }
+      where: { publicId }
     })
 
     if (!member) {
