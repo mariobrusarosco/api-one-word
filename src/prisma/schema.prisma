@@ -62,7 +62,7 @@ model Message {
   content   String
   channelId String
   memberId  String
-  memberFullName String     @default("")
+  memberNickname String     @default("")
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
   channel   Channel         @relation(fields: [channelId], references: [id], onDelete: Cascade)

@@ -9,8 +9,6 @@ const createMessage: RequestHandler = async function (req: Request, res: Respons
   try {
     const body = req?.body as Prisma.MessageCreateInput
     const params = req?.params as { channelId: string }
-    const memberId = Utils.getAuthenticatedUserId(req, res)
-    const memberFullName = `${memberId} ${memberId}`
 
     if (!body.content) {
       res.status(400).json({ message: ErrorMapper.MISSING_CONTENT })
@@ -22,12 +20,13 @@ const createMessage: RequestHandler = async function (req: Request, res: Respons
       return
     }
 
+    const { nickname, publicId } = req.authenticatedUser
     const newMessage = await db.message.create({
       data: {
         content: body.content,
         channelId: params.channelId,
-        memberId,
-        memberFullName: memberFullName
+        memberId: publicId,
+        memberNickname: nickname
       }
     })
 

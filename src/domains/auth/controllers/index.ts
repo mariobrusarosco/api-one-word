@@ -22,7 +22,13 @@ const authenticateUser: RequestHandler = async function (req: Request, res: Resp
       return
     }
 
-    const token = Utils.signUserCookieBased(publicId, res)
+    const token = Utils.signUserCookieBased(
+      {
+        nickname: member.nickname,
+        publicId
+      },
+      res
+    )
 
     res.status(200).send(token)
   } catch (error: any) {
@@ -36,7 +42,13 @@ const authenticateUser: RequestHandler = async function (req: Request, res: Resp
 
 async function unauthenticateUser(req: Request, res: Response) {
   try {
-    const token = Utils.signUserCookieBased('test', res)
+    const token = Utils.signUserCookieBased(
+      {
+        nickname: 'test',
+        publicId: 'test'
+      },
+      res
+    )
 
     return res.status(200).send(token)
   } catch (error: any) {
