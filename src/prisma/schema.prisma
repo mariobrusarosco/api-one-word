@@ -10,7 +10,7 @@ datasource db {
 
 model Member {
   id                String         @id @default(uuid())
-  authServiceId     String         @unique
+  publicId          String         @unique @default(uuid())
   nickname          String
   firstName         String?
   lastName          String?
@@ -28,7 +28,7 @@ model TableSeat {
   tableId   String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  member    Member    @relation(fields: [memberId], references: [authServiceId], onDelete: Cascade)
+  member    Member    @relation(fields: [memberId], references: [publicId], onDelete: Cascade)
   table     Table     @relation(fields: [tableId], references: [id], onDelete: Cascade)
 
   @@index([memberId])
@@ -66,7 +66,7 @@ model Message {
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
   channel   Channel         @relation(fields: [channelId], references: [id], onDelete: Cascade)
-  member    Member          @relation(fields: [memberId], references: [authServiceId], onDelete: Cascade)
+  member    Member          @relation(fields: [memberId], references: [publicId], onDelete: Cascade)
 
   @@index([channelId])
   @@index([memberId])
