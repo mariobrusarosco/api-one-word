@@ -2,10 +2,7 @@ import { Request, RequestHandler, Response } from 'express'
 import { GlobalErrorMapper } from '../../shared/error-handling/mapper'
 import { ErrorMapper } from '../error-handling/mapper'
 import db from '../../../services/database'
-import Logger from '../../../services/profiling'
-import { v4 } from 'uuid'
 import { Utils } from '@/domains/auth/utils'
-import { IAuthUser } from '../typing/interfaces'
 
 const authenticateUser: RequestHandler = async function (req: Request, res: Response) {
   try {
