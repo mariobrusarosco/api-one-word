@@ -10,8 +10,7 @@ const TableRouting = (app: Express) => {
   tableRouter.get('/', TableController.getAllTables)
   tableRouter.get('/:tableId', TableController.getTable)
   tableRouter.patch('/:tableId', TableController.updateTable)
-  tableRouter.post('/:tableId/invite', TableController.updateTableInvite)
-  tableRouter.put('/:tableId/join', TableController.joinTable)
+  tableRouter.put('/:tableId/seat', TableController.joinTable)
   tableRouter.patch('/:tableId/seat', TableController.updateSeat)
 
   app.use(`${process.env.API_VERSION}/tables`, AuthMiddleware, tableRouter)

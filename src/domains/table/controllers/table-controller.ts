@@ -128,24 +128,6 @@ const updateTable: RequestHandler = async function (req: Request, res: Response)
   }
 }
 
-const updateTableInvite: RequestHandler = async function (req: Request, res: Response) {
-  try {
-    const tableId = req?.params.tableId
-
-    const table = await db.table.update({
-      where: { id: tableId },
-      data: { inviteCode: uuidV4() }
-    })
-
-    res.json(table.inviteCode)
-  } catch (error: any) {
-    // log here: ErrorMapper.BIG_FIVE_HUNDRED.debug
-    res
-      .status(GlobalErrorMapper.BIG_FIVE_HUNDRED.status)
-      .send(GlobalErrorMapper.BIG_FIVE_HUNDRED.debug)
-  }
-}
-
 const joinTable: RequestHandler = async function (req: Request, res: Response) {
   try {
     const tableId = req?.params.tableId
@@ -153,6 +135,7 @@ const joinTable: RequestHandler = async function (req: Request, res: Response) {
     const email = body?.email
 
     const userToJoin = await db.member.findFirst({ where: { email } })
+
     if (!userToJoin) {
       res.status(404).json(ErrorMapper.MEMBER_NOT_FOUND)
       return
@@ -163,7 +146,7 @@ const joinTable: RequestHandler = async function (req: Request, res: Response) {
       data: {
         seats: {
           create: {
-            memberId: userToJoin.id,
+            memberId: userToJoin.publicId,
             role: TableRole.GUEST
           }
         }
@@ -209,7 +192,6 @@ const TableController = {
   getTable,
   createTable,
   updateTable,
-  updateTableInvite,
   joinTable,
   updateSeat
 }
