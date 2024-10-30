@@ -37,7 +37,6 @@ const createTable: RequestHandler = async function (req: Request, res: Response)
     const newTable = await db.table.create({
       data: {
         name: body.name,
-        inviteCode: uuidV4(),
         seats: {
           create: {
             memberId,
