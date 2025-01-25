@@ -2,7 +2,7 @@ import type { IncomingMessage, Server, ServerResponse } from 'http'
 import { Server as SocketServer } from 'socket.io'
 import { instrument } from '@socket.io/admin-ui'
 import { CorsAllowedOrigins } from '../../domains/socket/constants'
-import { SocketEventHandler } from '../../domains/socket/SocketEventHandler'
+import { SocketController } from '../../domains/socket/SocketController'
 
 export const startSocketServer = (
   server: Server<typeof IncomingMessage, typeof ServerResponse>
@@ -26,10 +26,10 @@ export const startSocketServer = (
     next()
   })
 
-  const socketHandler = new SocketEventHandler(socketServer)
+  const socketController = new SocketController(socketServer)
 
   socketServer.on('connection', async (socket: any) => {
-    socketHandler.runAllHandlers(socket)
+    socketController.runAllHandlers(socket)
   })
 
   return socketServer
