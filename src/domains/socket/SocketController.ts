@@ -1,5 +1,7 @@
 import { GameSocket } from './game';
 import { TableSocket } from './table';
+import { SocketEvents } from './typing/enums';
+import { ISocketUser } from './typing/socket';
 
 export class SocketController {
   private socketServer: any;
@@ -13,16 +15,12 @@ export class SocketController {
   }
 
   setupHandlers(socket: any) {
-    this.tableSocket.setupHandlers(socket)
-    this.gameSocket.setupHandlers(socket)
+    this.tableSocket.setupHandlers(socket);
+    this.gameSocket.setupHandlers(socket);
   }
 
-  disconnect(socket: any) {
-    socket.on('disconnect', () => {})
-  }
 
   runAllHandlers(socket: any) {
-    this.setupHandlers(socket)
-    this.disconnect(socket)
+    this.setupHandlers(socket);
   }
 }
