@@ -33,32 +33,16 @@ export class GameSocket {
     });
   }
 
-  // watchGameUpdate(socket: any) {
-  //   socket.on(SocketEvents.GAME_UPDATE, (gameState: IGameState) => {
-  //     socket.broadcast.emit(SocketEvents.GAME_UPDATE, gameState);
-  //   });
-  // }
-
-  // watchGamePhaseUpdate(socket: any) {
-  //   socket.on(SocketEvents.GAME_PHASES_UPDATE, ({ phases }: { phases: IGamePhase[] }) => {
-  //     // Broadcast to all clients in the room
-  //     socket.broadcast.emit(SocketEvents.GAME_PHASES_UPDATE, { phases });
-  //   })
-  // }
-  
-  // updateGamePhases(socket: any, phases: IGamePhase[]) {
-  //   socket.broadcast.emit(SocketEvents.GAME_PHASES_UPDATE, { phases });
-  // }
-
-  // watchChosenWord(socket: any) {
-  //   socket.on(SocketEvents.CHOSEN_WORD_UPDATE, ({ word }: { word: string }) => {
-  //     socket.broadcast.emit(SocketEvents.CHOSEN_WORD_UPDATE, { word });
-  //   });
-  // }
+  watchGameUpdate(socket: any) {
+    socket.on(SocketEvents.GAME_UPDATE, (gameState: IGameState) => {
+      socket.broadcast.emit(SocketEvents.GAME_UPDATE, gameState);
+    });
+  }
 
   setupHandlers(socket: any) {
     this.leaveGameRoom(socket)
     this.joinGameRoom(socket)
+    this.watchGameUpdate(socket)
     return this
   }
 }
