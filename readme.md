@@ -45,27 +45,115 @@ Now, the **API** is exposed on _http://localhost:3000_
 
 ---
 
-## Creating a local database
+# Local Database Setup Guide for the API One Word Project
+
+This guide will help you set up a local PostgreSQL database for the API One Word project using Docker and Prisma. By following these steps, you will ensure that all developers are using the same database version and can easily manage migrations.
+
+## Prerequisites
+
+- **Docker**: Ensure that Docker is installed and running on your machine. You can download it from [Docker's official website](https://www.docker.com/get-started).
+- **Node.js**: Make sure you have Node.js installed. You can download it from [Node.js official website](https://nodejs.org/).
+
+## Step 1: Clone the Repository
+
+First, clone the API One Word repository to your local machine:
 
 ```bash
-yarn prisma migrate dev --name init
+git clone https://github.com/mariobrusarosco/api-one-word.git
+cd api-one-word
 ```
 
-## Updating the Database
+## Step 2: Update the Environment Variables
 
-// TODO
+Open the `.env` file in the root of your project and set the `DATABASE_URL` variable to match your PostgreSQL configuration:
 
-## Accessing DB content
-
-```
-yarn prisma studio
+```env
+DATABASE_URL=postgres://your_username:your_password@localhost:5432/your_database_name
 ```
 
-## Running a migration
+> If you set `your_username` to `postgres`, `your_password` to `password`, and `your_database_name` to `api_one_word`, your `DATABASE_URL` would look like this:
+
+```env
+DATABASE_URL=postgres://postgres:password@localhost:5432/api_one_word
+```
+
+## Step 3: Start the PostgreSQL Container
+
+Run the following command in your terminal to start the PostgreSQL container:
 
 ```bash
-yarn prisma migrate dev --name init
+docker compose up -d
 ```
+
+This command will start the PostgreSQL service in the background.
+
+## Step 4: Configure Prisma
+
+Ensure your `prisma/schema.prisma` file is set up correctly to use PostgreSQL. It should look like this:
+
+```prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+```
+
+## Step 5: Manage Migrations with Prisma
+
+### Generate a New Migration
+
+After making changes to your Prisma schema, run the following command to create a new migration:
+
+```bash
+npx prisma migrate dev --name your_migration_name
+```
+
+### Apply Migrations
+
+To apply all pending migrations, run:
+
+```bash
+npx prisma migrate deploy
+```
+
+### Open Prisma Studio
+
+You can also use Prisma Studio to interact with your database:
+
+```bash
+npx prisma studio
+```
+
+## Step 6: Stopping the PostgreSQL Container
+
+When you no longer need the PostgreSQL container, you can stop it by running:
+
+```bash
+docker-compose down
+```
+
+If you want to reset the database and remove all data, you can run:
+
+```bash
+docker-compose down -v
+```
+
+## Additional Notes
+
+- Ensure that your Docker service is running before executing the commands.
+- If you encounter any issues, check the logs of the PostgreSQL container using:
+
+```bash
+docker-compose logs postgres
+```
+
+## Conclusion
+
+By following this guide, you should have a fully functional local PostgreSQL database set up for the API One Word project. This setup allows for consistent development environments across all team members and simplifies the process of managing database migrations with Prisma. If you have any questions or need further assistance, feel free to reach out to the team!
 
 ### Profiling and Logging
 
@@ -83,4 +171,23 @@ I'm using **Railway** to host the project. The url is [https://api-one-word.mari
 
 [Postman URL](https://www.postman.com/mario-brusarosco/workspace/mario-brusarosco/collection/2930329-c069887a-c13d-4bee-8bda-e69e3f5b9163)
 
----
+# Socket
+
+## Local Connections
+
+You can local socket connections by running:
+
+```bash
+yarn dev
+```
+
+Then openening a browsers tab at:
+
+```
+http://localhost:3000/socket.html
+```
+
+### Tables
+
+
+### Games

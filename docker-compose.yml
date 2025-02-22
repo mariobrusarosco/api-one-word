@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:14  # Specify the version you want to use
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: postgres  # This should be the username you want to create
+      POSTGRES_PASSWORD: postgres  # This should be the password for the user
+      POSTGRES_DB: postgres  # This is the default database to create
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

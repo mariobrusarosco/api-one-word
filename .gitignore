@@ -22,6 +22,6 @@ one-word.code-workspace
 
 
 # Env files
-.env.*.local
+.env
 .env.demo
 .env.production

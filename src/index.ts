@@ -36,6 +36,7 @@ app.use(cookieParser() as any)
 app.use(express.json())
 app.use(Profiling.middleware)
 
+console.log('process.env.API_VERSION', process.env.API_VERSION)
 // Routing
 TableRouting(app)
 ChannelRouting(app)
