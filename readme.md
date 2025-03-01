@@ -23,6 +23,24 @@ By using:
 6. **Railway** as Host
 7. Providing a swagger via **Postman**
 
+## Prerequisites
+
+Before you begin, make sure you have the following installed:
+
+- **Node.js**: Version 16 or higher
+  - Download from [Node.js official website](https://nodejs.org/)
+  - Verify installation: `node --version`
+
+- **Yarn**: Package manager
+  - Install with: `npm install -g yarn`
+  - Verify installation: `yarn --version`
+
+- **Docker**: For running PostgreSQL
+  - Download from [Docker's official website](https://www.docker.com/get-started)
+  - Make sure Docker is running before proceeding
+  - Verify with: `docker --version`
+
+
 ## Getting Started
 
 - Clone the project
