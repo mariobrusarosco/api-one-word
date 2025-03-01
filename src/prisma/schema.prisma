@@ -3,22 +3,22 @@ generator client {
 }
 
 datasource db {
-  url          = env("DATABASE_URL")
   provider     = "postgresql"
+  url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
 
 model Member {
-  id                String         @id @default(uuid())
-  publicId          String         @unique @default(uuid())
-  nickname          String
-  firstName         String?
-  lastName          String?
-  email             String
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
-  TableProfile      TableSeat[]
-  messages          Message[]
+  id           String      @id @default(uuid())
+  nickname     String
+  firstName    String?
+  lastName     String?
+  email        String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  publicId     String      @unique @default(uuid())
+  TableProfile TableSeat[]
+  messages     Message[]
 }
 
 model TableSeat {
@@ -36,11 +36,12 @@ model TableSeat {
 }
 
 model Table {
-  id         String         @id @default(uuid())
+  id         String      @id @default(uuid())
   name       String
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
-  seats   TableSeat[]
+  inviteCode String      @unique
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  seats      TableSeat[]
   channels   Channel[]
 }
 
@@ -57,15 +58,15 @@ model Channel {
 }
 
 model Message {
-  id        String          @id @default(uuid())
-  content   String
-  channelId String
-  memberId  String
-  memberNickname String     @default("")
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
-  channel   Channel         @relation(fields: [channelId], references: [id], onDelete: Cascade)
-  member    Member          @relation(fields: [memberId], references: [publicId], onDelete: Cascade)
+  id             String   @id @default(uuid())
+  content        String
+  channelId      String
+  memberId       String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  memberNickname String   @default("")
+  channel        Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  member         Member   @relation(fields: [memberId], references: [publicId], onDelete: Cascade)
 
   @@index([channelId])
   @@index([memberId])
