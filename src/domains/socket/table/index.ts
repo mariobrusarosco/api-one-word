@@ -43,7 +43,6 @@ export class TableSocket {
     socket.on(
       SocketEvents.NEW_CHAT_MESSAGE,
       ({ message, channelId }: { channelId: string; message: string }) => {
-        console.log("[---------------------]", {message, channelId})
         this.socketServer.to(channelId).emit(SocketEvents.UPDATE_CHAT_MESSAGES, message)
       }
     )

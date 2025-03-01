@@ -3,34 +3,32 @@ import { Server as SocketServer } from 'socket.io'
 import { instrument } from '@socket.io/admin-ui'
 import { CorsAllowedOrigins } from '../../domains/socket/constants'
 import { SocketController } from '../../domains/socket/SocketController'
+import { socketAuthMiddleware } from '../../domains/socket/middleware'
 
 export const startSocketServer = (
   server: Server<typeof IncomingMessage, typeof ServerResponse>
 ) => {
-  const socketServer = new SocketServer(server, {
+  // Create the Socket.IO server
+  const io = new SocketServer(server, {
     cors: {
-      origin: CorsAllowedOrigins,
-      methods: ['GET', 'POST'],
+      origin: [...CorsAllowedOrigins, "https://admin.socket.io"],
       credentials: true
     }
   })
 
-  instrument(socketServer, {
-    auth: false,
-    mode: 'development'
+  // Setup Admin UI - using the official format
+  instrument(io, {
+    auth: false
   })
 
-  // Middlewares
-  socketServer.use((socket: any, next) => {
-    socket.username = socket.handshake.auth.username
-    next()
-  })
+  // Apply the socket authentication middleware
+  io.use(socketAuthMiddleware)
 
-  const socketController = new SocketController(socketServer)
+  const socketController = new SocketController(io)
 
-  socketServer.on('connection', async (socket: any) => {
+  io.on('connection', async (socket: any) => {
     socketController.runAllHandlers(socket)
   })
 
-  return socketServer
+  return io
 }

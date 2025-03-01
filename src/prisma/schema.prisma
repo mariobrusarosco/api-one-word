@@ -38,7 +38,7 @@ model TableSeat {
 model Table {
   id         String      @id @default(uuid())
   name       String
-  inviteCode String      @unique
+  inviteCode String      @default(uuid())
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
   seats      TableSeat[]

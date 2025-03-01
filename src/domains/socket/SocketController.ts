@@ -15,10 +15,21 @@ export class SocketController {
   }
 
   setupHandlers(socket: any) {
+    // Get username from either the user object or direct username property
+    const username = socket.user?.username || socket.username || 'Unknown User';
+    const userId = socket.user?.userID || 'Unknown ID';
+    
+    // Log user connection with available information
+    console.log(`User connected: ${username} (ID: ${userId})`);
+    
     this.tableSocket.setupHandlers(socket);
     this.gameSocket.setupHandlers(socket);
+    
+    // Setup disconnect handler
+    socket.on('disconnect', () => {
+      console.log(`User disconnected: ${username}`);
+    });
   }
-
 
   runAllHandlers(socket: any) {
     this.setupHandlers(socket);
