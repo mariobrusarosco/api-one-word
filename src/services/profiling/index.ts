@@ -5,8 +5,6 @@ const isProd = process.env.ENV === 'production'
 
 const Profiling = {
   error: (msg: string) => {
-    console.log({ isProd })
-
     if (isProd) {
       Sentry.captureMessage(msg)
     }
@@ -18,7 +16,9 @@ const Profiling = {
     console.log('[LOGGER] - COOKIES', JSON.stringify(req.cookies))
     next()
   },
-  log: (msg: string, data?: any) => console.log({ isProd }, '[LOG]', msg, data)
+  log: (msg: string, data?: any) => {
+    if (!isProd) console.log('[LOG]', msg, data)
+  }
 }
 
 export default Profiling

@@ -8,7 +8,7 @@ import { IAuthUser } from '@/domains/auth/typing/interfaces'
 const getMember: RequestHandler = async function (req: Request, res: Response) {
   try {
     const { publicId } = req.authenticatedUser
-    Logger.log(`[DEBUG] getMember`, publicId)
+    Logger.log(`[DEBUG] getMember`, req.authenticatedUser)
 
     const member = await db.member.findUnique({
       where: { publicId }
