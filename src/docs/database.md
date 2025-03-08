@@ -21,7 +21,30 @@ Before starting, make sure you have the following installed:
 
 ## Starting the Local Database
 
-### Step 1: Start the PostgreSQL Container
+### Step 1: Clone the Repository (if you haven't already)
+
+First, clone the API One Word repository to your local machine:
+
+```bash
+git clone https://github.com/mariobrusarosco/api-one-word.git
+cd api-one-word
+```
+
+### Step 2: Update Environment Variables
+
+Open the `.env` file in the root of your project and set the `DATABASE_URL` variable to match your PostgreSQL configuration:
+
+```env
+DATABASE_URL=postgres://your_username:your_password@localhost:5432/your_database_name
+```
+
+> If you set `your_username` to `postgres`, `your_password` to `postgres`, and `your_database_name` to `api_one_word`, your `DATABASE_URL` would look like this:
+
+```env
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/api_one_word
+```
+
+### Step 3: Start the PostgreSQL Container
 
 The project uses Docker to run a PostgreSQL database instance. Follow these steps to start it:
 
@@ -47,7 +70,24 @@ The project uses Docker to run a PostgreSQL database instance. Follow these step
 
    You should see the `postgres_db` container listed as running.
 
-### Step 2: Initialize the Database
+### Step 4: Configure Prisma
+
+Ensure your `prisma/schema.prisma` file is set up correctly to use PostgreSQL. It should look like this:
+
+```prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+```
+
+This configuration tells Prisma to use PostgreSQL as the database provider and to get the connection string from the `DATABASE_URL` environment variable.
+
+### Step 5: Initialize the Database
 
 After starting the container, you need to set up the database schema and seed it with initial data:
 
@@ -72,7 +112,7 @@ After starting the container, you need to set up the database schema and seed it
    or
 
    ```bash
-   npx prisma migrate dev --schema=./src/prisma/schema.prisma
+   npx prisma migrate dev --name your_migration_name --schema=./src/prisma/schema.prisma
    ```
 
 3. Seed the database with initial data:
@@ -105,12 +145,11 @@ Prisma Studio is a visual database editor that comes with Prisma. It's the easie
 
 2. Open your browser and navigate to:
 
-   ```bash
+   ```
    http://localhost:5555
    ```
 
 Prisma Studio offers a user-friendly interface where you can:
-
 - Browse all tables and records
 - Filter and sort data
 - Create, update, and delete records
@@ -125,7 +164,6 @@ pgAdmin is a comprehensive PostgreSQL administration tool:
 2. Launch pgAdmin
 
 3. Add a new server with the following connection details:
-
    - Name: One Word Local
    - Host: localhost
    - Port: 5432
@@ -142,7 +180,6 @@ DBeaver is a universal database tool that works with many database types:
 1. Download and install [DBeaver](https://dbeaver.io/download/)
 
 2. Launch DBeaver and connect to your PostgreSQL database with these details:
-
    - Connection Type: PostgreSQL
    - Server Host: localhost
    - Port: 5432
@@ -157,7 +194,6 @@ DBeaver is a universal database tool that works with many database types:
 ### Viewing Table Structure
 
 To explore the database schema:
-
 - In Prisma Studio: Click on a model name to see its structure
 - In pgAdmin: Expand Servers > One Word Local > Databases > postgres > Schemas > public > Tables, then right-click a table and select "Properties"
 - In DBeaver: Expand Databases > postgres > Schemas > public > Tables, then select a table to view its columns
@@ -165,7 +201,6 @@ To explore the database schema:
 ### Running SQL Queries
 
 To execute custom SQL queries:
-
 - In pgAdmin: Click Tools > Query Tool, then enter and execute your SQL
 - In DBeaver: Right-click on the database connection and select "SQL Editor"
 
@@ -252,3 +287,7 @@ If your schema changes aren't showing up:
    ```
 
 4. Restart your API server to ensure it uses the updated schema.
+
+## Note for One Word Frontend Project
+
+If you're working on the One Word frontend project, note that it integrates with this API One Word project. To make the frontend work properly, you'll need to have this API running with a properly configured database.
