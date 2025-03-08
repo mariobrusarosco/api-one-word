@@ -173,6 +173,8 @@ docker-compose logs postgres
 
 By following this guide, you should have a fully functional local PostgreSQL database set up for the API One Word project. This setup allows for consistent development environments across all team members and simplifies the process of managing database migrations with Prisma. If you have any questions or need further assistance, feel free to reach out to the team!
 
+> **Note:** For more detailed database documentation including GUI tools, common operations, and troubleshooting, please see [src/docs/database.md](src/docs/database.md).
+
 ### Profiling and Logging
 
 This project uses the _Sentry's Free Plan_
