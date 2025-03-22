@@ -1,28 +1,35 @@
 import { SocketEvents } from '../typing/enums'
-import { getSocketsFromRoom } from '../utils'
+import {  updateTableParticipants } from '../utils'
 
 export class TableSocket {
   constructor(private socketServer: any) {
     this.socketServer = socketServer;
   }
 
+  onConnection(socket: any) {
+    socket.on('disconnect', async () => {
+      // If we have the tableId stored on the socket
+      if (socket.tableId) {
+        console.log("User disconnected from table:", socket.tableId);
+        await updateTableParticipants(this.socketServer, socket.tableId, socket.id);
+      }
+    })
+  }
 
   joinTable(socket: any) {
     socket.on(SocketEvents.JOIN_TABLE, async (tableId: string) => {
-      socket.join(tableId)
-      const users = await getSocketsFromRoom(this.socketServer, tableId)
-      this.socketServer.in(tableId).emit(SocketEvents.UPDATE_TABLE_PARTICIPANTS, users)
+      // Save the current table to the socket
+      socket.tableId = tableId;
+      
+      socket.join(tableId);
+      await updateTableParticipants(this.socketServer, tableId);
     })
   }
 
   leaveTable(socket: any) {
     socket.on(SocketEvents.LEAVE_TABLE, async (tableId: string) => {
-      const allRoomUsers = await getSocketsFromRoom(this.socketServer, tableId)
-      const remainingUsers = allRoomUsers.filter(
-        (user: any) => user.userID !== socket.id
-      )
-      this.socketServer.in(tableId).emit(SocketEvents.UPDATE_TABLE_PARTICIPANTS, remainingUsers)
-      socket.leave(tableId)
+      await updateTableParticipants(this.socketServer, tableId, socket.id);
+      socket.leave(tableId);
     })
   }
 
@@ -39,7 +46,6 @@ export class TableSocket {
   }
 
   chatMessage(socket: any) {
-    console.log("[chatMessage]")
     socket.on(
       SocketEvents.NEW_CHAT_MESSAGE,
       ({ message, channelId }: { channelId: string; message: string }) => {
@@ -49,6 +55,7 @@ export class TableSocket {
   }
 
   setupHandlers(socket: any) {
+    this.onConnection(socket)
     this.joinTable(socket)
     this.leaveTable(socket)
     this.joinChat(socket)

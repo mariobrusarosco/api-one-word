@@ -28,10 +28,12 @@ By using:
 Before you begin, make sure you have the following installed:
 
 - **Node.js**: Version 16 or higher
+
   - Download from [Node.js official website](https://nodejs.org/)
   - Verify installation: `node --version`
 
 - **Yarn**: Package manager
+
   - Install with: `npm install -g yarn`
   - Verify installation: `yarn --version`
 
@@ -39,7 +41,6 @@ Before you begin, make sure you have the following installed:
   - Download from [Docker's official website](https://www.docker.com/get-started)
   - Make sure Docker is running before proceeding
   - Verify with: `docker --version`
-
 
 ## Getting Started
 
@@ -62,7 +63,6 @@ yarn dev
 Now, the **API** is exposed on _http://localhost:3000_
 
 ---
-
 
 ### Profiling and Logging
 
@@ -97,6 +97,5 @@ http://localhost:3000/socket.html
 ```
 
 ### Tables
-
 
 ### Games

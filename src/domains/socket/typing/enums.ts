@@ -1,6 +1,6 @@
 export enum SocketEvents {
   CONNECTED = 'connected',
-  DISCONNECTED = 'disconnected',
+  DISCONNECT = 'disconnect',
   CREATE_GAME = 'create_game',
   LEAVE_TABLE = 'leave-table',
   JOIN_TABLE = 'join-table',
