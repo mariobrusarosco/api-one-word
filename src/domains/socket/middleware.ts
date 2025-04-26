@@ -1,5 +1,4 @@
 import { Socket } from 'socket.io';
-import { ISocketUser } from './typing/socket';
 
 export const socketAuthMiddleware = (socket: Socket, next: (err?: Error) => void) => {
   try {

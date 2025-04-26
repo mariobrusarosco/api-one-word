@@ -14,24 +14,27 @@ export class GameSocket {
       const user = socket.data.user;
       // save the gameId to the socket
       socket.data.gameId = gameId;
+      socket.join(gameId);
       
       console.log('[SOCKET]', user.username, " has joined game ", gameId);
       
       await updateGameParticipants(this.socketServer, gameId);
-      socket.join(gameId);
       
       this.socketServer.to(gameId).emit(SocketEvents.JOIN_GAME, { gameId, user });
     })
   }
 
   leaveGame(socket: ISocketUser) {
-    socket.on(SocketEvents.LEAVE_GAME, async (gameId: string) => {
+    socket.on(SocketEvents.LEAVE_GAME, async () => {
       const user = socket.data.user;
-
-      socket.leave(gameId);
-
+      const gameId = socket.data.gameId as string;
+      
       console.log('[SOCKET]', user.username, " has left game ", gameId);
+      socket.leave(gameId);
+      
       await updateGameParticipants(this.socketServer, gameId);
+
+      this.socketServer.to(gameId).emit(SocketEvents.LEAVE_GAME, { gameId, user });
     })
   }
 
