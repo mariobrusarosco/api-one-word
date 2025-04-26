@@ -2,9 +2,9 @@ import { SocketEvents } from "./typing/enums";
 import { ISocketUser } from "./typing/socket";
 
 export const getSocketsFromRoom = async (socketServer: any, room: string) => {
-  return (await socketServer.of('/').in(room).fetchSockets()).map((socket: any) => {
+  return (await socketServer.of('/').in(room).fetchSockets()).map((socket: ISocketUser) => {
     return {
-      userID: socket.id,
+      id: socket.data.user.id,
       username: socket.handshake.auth.username
     }
   })
