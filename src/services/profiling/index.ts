@@ -12,8 +12,8 @@ const Profiling = {
     console.error('[ERROR]', msg)
   },
   middleware: (req: Request, res: Response, next: NextFunction) => {
-    console.log('[LOGGER] - ROUTE', req.method, req.url)
-    console.log('[LOGGER] - COOKIES', JSON.stringify(req.cookies))
+    // console.log('[LOGGER] - ROUTE', req.method, req.url)
+    // console.log('[LOGGER] - COOKIES', JSON.stringify(req.cookies))
     next()
   },
   log: (msg: string, data?: any) => {

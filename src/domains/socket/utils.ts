@@ -29,3 +29,18 @@ export const updateTableParticipants = async (
   
   return updatedUsers;
 } 
+
+export const updateGameParticipants = async (
+  socketServer: any,
+  roomId: string,
+  socketToExclude?: string
+) => {
+
+  const allRoomUsers = await getSocketsFromRoom(socketServer, roomId);
+  const updatedUsers = socketToExclude 
+    ? allRoomUsers.filter((user: any) => user.userID !== socketToExclude)
+    : allRoomUsers;
+    
+  socketServer.in(roomId).emit(SocketEvents.UPDATE_GAME_PARTICIPANTS, updatedUsers);
+} 
+  
