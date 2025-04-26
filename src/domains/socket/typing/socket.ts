@@ -1,7 +1,16 @@
-export interface ISocketUser {
-  userID: string;
-  username: string;
-  email: string;
+import { Socket } from "socket.io";
+ 
+
+export interface ISocketUser extends Socket {
+  data: {
+    user: {
+      id: string;
+      username: string;
+      email: string;
+    }
+    gameId?: string;  
+    tableId?: string;
+  }
 }
 
 export interface ISocketRoom {

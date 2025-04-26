@@ -1,37 +1,41 @@
 import {  IGamePartipant, IGameState } from '@/domains/game/typing';
 import { SocketEvents } from '../typing/enums'
 import { getSocketsFromRoom, updateGameParticipants } from '../utils'
+import { Server, Socket } from 'socket.io';
+import { ISocketUser } from '../typing/socket';
 
 export class GameSocket {
-  constructor(private socketServer: any) {
+  constructor(private socketServer: Server) {
     this.socketServer = socketServer;
   }
 
-  joinGame(socket: any) {
+  joinGame(socket: ISocketUser) {
     socket.on(SocketEvents.JOIN_GAME, async ({ gameId }: {gameId: string }) => {
+      const user = socket.data.user
       // save the gameId to the socket
-      socket.gameId = gameId
+      socket.data.gameId = gameId
       
-      console.log('[SOCKET]', socket.id, " has joined game ", gameId)
+      console.log('[SOCKET]',  socket.data, " has joined game ", gameId)
+      
       await updateGameParticipants(this.socketServer, gameId)
+      
       socket.join(gameId)
+      
+      this.socketServer.emit(SocketEvents.JOIN_GAME, { gameId, ...user })
     })
   }
 
-  leaveGame(socket: any) {
+  leaveGame(socket: ISocketUser) {
     socket.on(SocketEvents.LEAVE_GAME, async (gameId: string) => {
-      socket.leave(gameId)
+      const user = socket.data.user
 
-      console.log('[SOCKET]', socket.id, " has left game ", gameId)
-      await updateGameParticipants(this.socketServer, gameId, socket.id)
+      socket.leave(gameId)
+      console.log('[SOCKET]', user.username, " has left game ", gameId)
+      await updateGameParticipants(this.socketServer, gameId, { user })
     })
   }
 
-
-  
-  
-
-  setupHandlers(socket: any) {
+  setupHandlers(socket: Socket) {
     this.joinGame(socket)
     this.leaveGame(socket)
     return this

@@ -1,4 +1,5 @@
 import { SocketEvents } from "./typing/enums";
+import { ISocketUser } from "./typing/socket";
 
 export const getSocketsFromRoom = async (socketServer: any, room: string) => {
   return (await socketServer.of('/').in(room).fetchSockets()).map((socket: any) => {
@@ -18,11 +19,11 @@ export const getSocketsFromRoom = async (socketServer: any, room: string) => {
 export const updateTableParticipants = async (
   socketServer: any,
   roomId: string,
-  socketToExclude?: string
+  socketToExclude?: ISocketUser["data"]
 ) => {
   const allRoomUsers = await getSocketsFromRoom(socketServer, roomId);
   const updatedUsers = socketToExclude 
-    ? allRoomUsers.filter((user: any) => user.userID !== socketToExclude)
+    ? allRoomUsers.filter((user: any) => user.user.id !== socketToExclude.user.id)
     : allRoomUsers;
     
   socketServer.in(roomId).emit(SocketEvents.UPDATE_TABLE_PARTICIPANTS, updatedUsers);
@@ -33,12 +34,12 @@ export const updateTableParticipants = async (
 export const updateGameParticipants = async (
   socketServer: any,
   roomId: string,
-  socketToExclude?: string
+  socketToExclude?: ISocketUser["data"]
 ) => {
 
   const allRoomUsers = await getSocketsFromRoom(socketServer, roomId);
   const updatedUsers = socketToExclude 
-    ? allRoomUsers.filter((user: any) => user.userID !== socketToExclude)
+    ? allRoomUsers.filter((user: any) => user.user.id !== socketToExclude.user.id)
     : allRoomUsers;
     
   socketServer.in(roomId).emit(SocketEvents.UPDATE_GAME_PARTICIPANTS, updatedUsers);
