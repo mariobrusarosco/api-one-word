@@ -11,33 +11,33 @@ export class GameSocket {
 
   joinGame(socket: ISocketUser) {
     socket.on(SocketEvents.JOIN_GAME, async ({ gameId }: {gameId: string }) => {
-      const user = socket.data.user
+      const user = socket.data.user;
       // save the gameId to the socket
-      socket.data.gameId = gameId
+      socket.data.gameId = gameId;
       
-      console.log('[SOCKET]',  socket.data, " has joined game ", gameId)
+      console.log('[SOCKET]', user.username, " has joined game ", gameId);
       
-      await updateGameParticipants(this.socketServer, gameId)
+      await updateGameParticipants(this.socketServer, gameId);
+      socket.join(gameId);
       
-      socket.join(gameId)
-      
-      this.socketServer.emit(SocketEvents.JOIN_GAME, { gameId, ...user })
+      this.socketServer.to(gameId).emit(SocketEvents.JOIN_GAME, { gameId, user });
     })
   }
 
   leaveGame(socket: ISocketUser) {
     socket.on(SocketEvents.LEAVE_GAME, async (gameId: string) => {
-      const user = socket.data.user
+      const user = socket.data.user;
 
-      socket.leave(gameId)
-      console.log('[SOCKET]', user.username, " has left game ", gameId)
-      await updateGameParticipants(this.socketServer, gameId, { user })
+      socket.leave(gameId);
+
+      console.log('[SOCKET]', user.username, " has left game ", gameId);
+      await updateGameParticipants(this.socketServer, gameId);
     })
   }
 
-  setupHandlers(socket: Socket) {
-    this.joinGame(socket)
-    this.leaveGame(socket)
-    return this
+  setupHandlers(socket: ISocketUser) {
+    this.joinGame(socket);
+    this.leaveGame(socket);
+    return this;
   }
 }

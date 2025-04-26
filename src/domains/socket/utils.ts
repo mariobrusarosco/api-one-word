@@ -23,7 +23,7 @@ export const updateTableParticipants = async (
 ) => {
   const allRoomUsers = await getSocketsFromRoom(socketServer, roomId);
   const updatedUsers = socketToExclude 
-    ? allRoomUsers.filter((user: any) => user.user.id !== socketToExclude.user.id)
+    ? allRoomUsers.filter((user: any) => user.id !== socketToExclude.user.id)
     : allRoomUsers;
     
   socketServer.in(roomId).emit(SocketEvents.UPDATE_TABLE_PARTICIPANTS, updatedUsers);
