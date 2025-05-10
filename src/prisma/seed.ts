@@ -65,7 +65,6 @@ async function main() {
     const friendsForeverTable = await prisma.table.create({
       data: {
         name: 'Friends Forever',
-        inviteCode: 'FRIENDS4EVER',
       },
     });
     console.log('Table created:', friendsForeverTable);

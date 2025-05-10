@@ -25,3 +25,7 @@ one-word.code-workspace
 .env
 .env.demo
 .env.production
+
+
+# Package Managers
+.yarn
