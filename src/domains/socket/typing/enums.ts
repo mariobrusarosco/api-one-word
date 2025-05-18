@@ -1,6 +1,6 @@
 export enum SocketEvents {
   CONNECTED = 'connected',
-  DISCONNECTED = 'disconnected',
+  DISCONNECT = 'disconnect',
   CREATE_GAME = 'create_game',
   LEAVE_TABLE = 'leave-table',
   JOIN_TABLE = 'join-table',
@@ -9,5 +9,9 @@ export enum SocketEvents {
   LEAVE_CHAT = 'leave-chat',
   MESSAGE = 'message',
   NEW_CHAT_MESSAGE = 'new-chat-message',
-  UPDATE_CHAT_MESSAGES = 'update-chat-messages'
+  UPDATE_CHAT_MESSAGES = 'update-chat-messages',
+  JOIN_GAME = 'join-game',
+  LEAVE_GAME = 'leave-game',
+  UPDATE_GAME_PARTICIPANTS = 'update-game-participants',
+  GAME_UPDATE = 'game-update'
 }

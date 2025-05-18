@@ -1,6 +1,6 @@
 import { GlobalErrorMapper } from '../../shared/error-handling/mapper'
 import { NextFunction, Response, Request } from 'express'
-import { AuthCookieContent, DemoMember } from '../typing/interfaces'
+import { AuthCookieContent } from '../typing/interfaces'
 import { Utils } from '../utils'
 
 const { NODE_ENV } = process.env
@@ -11,12 +11,18 @@ export const AuthMiddleware = (req: Request, res: Response, next: NextFunction) 
     const authCookie = Utils.getUserCookie(req)
 
     if (byPassAuth) {
-      const member = Utils.decodeMemberToken(authCookie) as AuthCookieContent
-
       req.authenticatedUser = {
-        publicId: member.publicId || '',
-        nickname: member.nickname
+        publicId: '123',
+        nickname: 'John Doe'
       }
+
+      return next()
+    }
+
+    const member = Utils.decodeMemberToken(authCookie) as AuthCookieContent
+    req.authenticatedUser = {
+      publicId: member.publicId || '',
+      nickname: member.nickname
     }
 
     next()

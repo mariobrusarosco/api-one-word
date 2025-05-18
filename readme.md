@@ -23,6 +23,25 @@ By using:
 6. **Railway** as Host
 7. Providing a swagger via **Postman**
 
+## Prerequisites
+
+Before you begin, make sure you have the following installed:
+
+- **Node.js**: Version 16 or higher
+
+  - Download from [Node.js official website](https://nodejs.org/)
+  - Verify installation: `node --version`
+
+- **Yarn**: Package manager
+
+  - Install with: `npm install -g yarn`
+  - Verify installation: `yarn --version`
+
+- **Docker**: For running PostgreSQL
+  - Download from [Docker's official website](https://www.docker.com/get-started)
+  - Make sure Docker is running before proceeding
+  - Verify with: `docker --version`
+
 ## Getting Started
 
 - Clone the project
@@ -45,28 +64,6 @@ Now, the **API** is exposed on _http://localhost:3000_
 
 ---
 
-## Creating a local database
-
-```bash
-yarn prisma migrate dev --name init
-```
-
-## Updating the Database
-
-// TODO
-
-## Accessing DB content
-
-```
-yarn prisma studio
-```
-
-## Running a migration
-
-```bash
-yarn prisma migrate dev --name init
-```
-
 ### Profiling and Logging
 
 This project uses the _Sentry's Free Plan_
@@ -83,4 +80,22 @@ I'm using **Railway** to host the project. The url is [https://api-one-word.mari
 
 [Postman URL](https://www.postman.com/mario-brusarosco/workspace/mario-brusarosco/collection/2930329-c069887a-c13d-4bee-8bda-e69e3f5b9163)
 
----
+# Socket
+
+## Local Connections
+
+You can local socket connections by running:
+
+```bash
+yarn dev
+```
+
+Then openening a browsers tab at:
+
+```
+http://localhost:3000/socket.html
+```
+
+### Tables
+
+### Games
