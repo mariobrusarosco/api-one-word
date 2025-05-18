@@ -16,6 +16,7 @@ yarn-error.log
 one-word.code-workspace
 .env
 .DS_Store
+.cursorindexingignore
 
 # Sentry Config File
 .sentryclirc
@@ -29,3 +30,5 @@ one-word.code-workspace
 
 # Package Managers
 .yarn
+# SpecStory explanation file
+.specstory/.what-is-this.md

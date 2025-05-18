@@ -13,6 +13,5 @@ export enum SocketEvents {
   JOIN_GAME = 'join-game',
   LEAVE_GAME = 'leave-game',
   UPDATE_GAME_PARTICIPANTS = 'update-game-participants',
+  GAME_UPDATE = 'game-update'
 }
-
-
