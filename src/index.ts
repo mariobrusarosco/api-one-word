@@ -36,6 +36,11 @@ app.use(cookieParser() as any)
 app.use(express.json())
 app.use(Profiling.middleware)
 
+app.get('/api/v1/health', (_req, res) => {
+  const env = (process.env.NODE_ENV || 'development').toUpperCase()
+  res.json({ app: `One Word ${env}` })
+})
+
 console.log('process.env.API_VERSION', process.env.API_VERSION)
 // Routing
 TableRouting(app)
