@@ -14,6 +14,7 @@ import { startWebServer } from '@/services/app-initialization/start-web-server'
 import accessControl from '@/middlewares/access-control'
 import AuthenticationRouting from '@/domains/auth/routes'
 import MemberRouting from '@/domains/member/routes'
+import AdminRouting from '@/domains/admin/routes'
 import Profiling from '@/services/profiling'
 
 // TODO Change to ESM import
@@ -48,6 +49,7 @@ ChannelRouting(app)
 MessageRouting(app)
 AuthenticationRouting(app)
 MemberRouting(app)
+AdminRouting(app) // This will handle the /api/v1/admin prefix internally
 
 // Sentry.setupExpressErrorHandler(app)
 
