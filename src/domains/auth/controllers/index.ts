@@ -14,7 +14,9 @@ const authenticateUser: RequestHandler = async function (req: Request, res: Resp
     })
 
     if (!member) {
-      res.status(ErrorMapper.NOT_FOUND.status).send(ErrorMapper.NOT_FOUND.userMessage)
+      res
+        .status(ErrorMapper.UNAUTHORIZED.status)
+        .send(ErrorMapper.UNAUTHORIZED.userMessage)
 
       return
     }
