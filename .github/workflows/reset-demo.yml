@@ -2,37 +2,34 @@ name: Reset Demo Environment
 
 on:
   schedule:
-    # Runs at 05:00 UTC every day
     - cron: '0 5 * * *'
   workflow_dispatch:
-    # Allow manual triggering from GitHub Actions UI
 
 jobs:
   reset-demo:
+    name: Reset Demo Environment
     runs-on: ubuntu-latest
-    environment:
-      name: demo
-      url: https://api-one-word-demo.mariobrusarosco.com
+    environment: demo
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'yarn'
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'yarn'
 
-      - name: Install dependencies
-        run: yarn install
+    - name: Install dependencies
+      run: yarn install --frozen-lockfile
 
-      - name: Reset Demo Environment
-        env:
-          NODE_ENV: demo
-          DEMO_RESET_TOKEN: ${{ secrets.DEMO_RESET_TOKEN }}
-        run: |
-          # Trigger the reset endpoint
-          curl -X POST \
-            -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $DEMO_RESET_TOKEN" \
-            https://api-one-word-demo.mariobrusarosco.com/api/v1/admin/reset-demo
+    - name: Reset demo environment
+      env:
+        NODE_ENV: demo
+        DEMO_RESET_TOKEN: ${{ secrets.DEMO_RESET_TOKEN }}
+      run: |
+        curl -X POST \
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer $DEMO_RESET_TOKEN" \
+          https://api-one-word-demo.mariobrusarosco.com/api/v1/admin/reset-demo
