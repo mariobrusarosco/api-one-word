@@ -3,21 +3,9 @@ import { NextFunction, Response, Request } from 'express'
 import { AuthCookieContent } from '../typing/interfaces'
 import { Utils } from '../utils'
 
-const { NODE_ENV } = process.env
-
 export const AuthMiddleware = (req: Request, res: Response, next: NextFunction) => {
   try {
-    const byPassAuth = NODE_ENV === 'demo'
     const authCookie = Utils.getUserCookie(req)
-
-    if (byPassAuth) {
-      req.authenticatedUser = {
-        publicId: '123',
-        nickname: 'John Doe'
-      }
-
-      return next()
-    }
 
     const member = Utils.decodeMemberToken(authCookie) as AuthCookieContent
     req.authenticatedUser = {

@@ -14,7 +14,7 @@ const getUserCookie = (req: Request) => req.cookies[MEMBER_PUBLIC_ID_COOKIE || '
 const signUserCookieBased = (cookieContent: AuthCookieContent, res: Response) => {
   if (!res || !cookieContent || !JWT_SECRET) return null
 
-  const token = jwt.sign(cookieContent, JWT_SECRET, { expiresIn: '1d' })
+  const token = jwt.sign(cookieContent, JWT_SECRET, { expiresIn: '15d' })
 
   res.cookie(MEMBER_PUBLIC_ID_COOKIE || '', token, {
     httpOnly: true,
