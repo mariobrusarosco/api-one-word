@@ -7,6 +7,7 @@ on:
       - main
     paths:
       - 'src/prisma/migrations/**'
+      - 'src/prisma/schema.prisma'
 
 jobs:
   deploy-migrations:

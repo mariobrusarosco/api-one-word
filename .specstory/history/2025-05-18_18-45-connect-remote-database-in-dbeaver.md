@@ -1177,6 +1177,250 @@ Yes! There are a few ways to see the migrations table locally:
 
 ---
 
+```bash
+npx prisma studio
+```
+
+---
+
+_**User**_
+
+on Action:
+
+Run npx prisma migrate deploy
+  
+Prisma schema loaded from src/prisma/schema.prisma
+Datasource "db": PostgreSQL database "neondb", schema "public" at "ep-steep-field-a4g0j55j-pooler.us-east-1.aws.neon.tech"
+4 migrations found in prisma/migrations
+Error: P3009
+migrate found failed migrations in the target database, new migrations will not be applied. Read more about how to resolve migration issues in a production database: https://pris.ly/d/migrate-resolve
+The `20250412173809_init` migration started at 2025-06-01 19:31:58.809805 UTC failed
+Error: Process completed with exit code 1.
+
+---
+
+_**Assistant**_
+
+Ah! The issue is that Neon still has the **failed migration record** in its `_prisma_migrations` table. Even though we deleted the migration file locally, Neon remembers that it tried to apply `20250412173809_init` and it failed.
+
+We need to clean up that failed migration record in Neon. Here are the options:
+
+## Option 1: Mark the failed migration as resolved (Recommended)
+
+---
+
+```bash
+npx prisma migrate resolve --applied 20250412173809_init
+```
+
+```
+PS C:\Users\mario\coding\api-one-word> npx prisma migrate resolve --applied 20250412173809_init
+Environment variables loaded from .env
+Datasource "db": PostgreSQL database "postgres", schema "public" at "localhost:5434"
+Error: P3017
+
+The migration 20250412173809_init could not be found. Please make sure that the migration exists, and
+ that you included the whole name of the directory. (example: "20201207184859_initial_migration")    
+
+PS C:\Users\mario\coding\api-one-word>
+```
+
+---
+
+The command ran against your local database instead of Neon. We need to run it against Neon. Let me check your environment setup:
+
+---
+
+Could not find file .env in the workspace.
+
+---
+
+<details>
+            <summary>Searched codebase ".env" • **2** results</summary>
+        
+| File |
+|------|
+| `undefined` |
+| `undefined` |
+
+</details>
+
+---
+
+_**User**_
+
+This command access NEON?
+
+npx prisma migrate resolve --applied 20250412173809_init
+
+---
+
+_**Assistant**_
+
+Good question! The command **should** access Neon if your `DATABASE_URL` environment variable points to Neon, but from the output I saw earlier, it was connecting to your local database (`localhost:5434`).
+
+Let me check what `DATABASE_URL` is currently set to:
+
+---
+
+```bash
+echo $env:DATABASE_URL
+```
+
+---
+
+_**User**_
+
+It's not! 
+
+---
+
+_**Assistant**_
+
+Exactly! That's why the command ran against your local database instead of Neon.
+
+To run the resolve command against **Neon**, you have a few options:
+
+## Option 1: Set DATABASE_URL temporarily for this command
+
+---
+
+```bash
+$env:DATABASE_URL="postgresql://neondb_owner:your_password@ep-steep-field-a4g0j55j-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require"; npx prisma migrate resolve --applied 20250412173809_init
+```
+
+---
+
+_**User**_
+
+Can I delete the entry on Neon? Would this work?
+
+---
+
+_**Assistant**_
+
+**Yes, absolutely!** Deleting the failed migration entry from Neon's `_prisma_migrations` table would work perfectly and is actually a very clean solution.
+
+## How to do it:
+
+1. **Connect to Neon using DBeaver** (like we set up earlier)
+2. **Find the `_prisma_migrations` table**
+3. **Delete the row** where `migration_name = '20250412173809_init'`
+
+## The SQL command would be:
+```sql
+DELETE FROM "_prisma_migrations" 
+WHERE migration_name = '20250412173809_init';
+```
+
+## Why this works:
+- ✅ **Removes the failed migration record** - Prisma won't see it as a failed migration anymore
+- ✅ **Clean slate** - Next time you run `prisma migrate deploy`, it will only see the 4 valid migrations
+- ✅ **No side effects** - Since the migration never actually applied (it failed), there's no schema change to undo
+- ✅ **Simple and direct** - No need to mess with environment variables or complex commands
+
+## After deleting the row:
+- Your GitHub Action should work perfectly
+- `prisma migrate deploy` will see 4 migrations, all already applied
+- It will report "Database schema is up to date!" ✅
+
+Go ahead and delete that row in DBeaver - it's the cleanest solution! 🎯
+
+---
+
+_**User**_
+
+Done! Can you double check if @deploy.yml and @deploy-migrations-demo.yml  contains the correct paths for watching for changed files on migations table?
+
+Because the last three commits on main didn't trigger the action. I had to manually ran it
+
+---
+
+_**Assistant**_
+
+Good catch! Let me check the paths in both workflows:
+
+## Current paths being watched:
+
+**`deploy.yml` (production):**
+```yaml
+paths:
+  - src/prisma/migrations/**
+```
+
+**`deploy-migrations-demo.yml` (demo):**
+```yaml
+paths:
+  - 'src/prisma/migrations/**'
+```
+
+## The issue:
+
+Both workflows are only watching `src/prisma/migrations/**`, but let me check where your migrations are actually located:
+
+---
+
+<details>
+            <summary>Listed current directory • **27** results</summary>
+        
+| Name |
+|-------|
+| 📁 `.git` |
+| 📄 `readme.md` |
+| 📁 `.specstory` |
+| 📄 `.cursorindexingignore` |
+| 📁 `node_modules` |
+| 📄 `package.json` |
+| 📄 `yarn.lock` |
+| 📁 `dist` |
+| 📁 `src` |
+| 📁 `docs` |
+| 📁 `scripts` |
+| 📁 `.nixpacks` |
+| 📄 `.yarnrc.yml` |
+| 📄 `docker-compose.yml` |
+| 📄 `.example.env` |
+| 📄 `.gitignore` |
+| 📁 `.windsurf` |
+| 📁 `.yarn` |
+| 📄 `tsconfig.json` |
+| 📄 `one-word.code-workspace` |
+| 📄 `global.d.ts` |
+| 📄 `.prettierrc` |
+| 📄 `.prettierignore` |
+| 📁 `.github` |
+| 📄 `.eslintrc` |
+| 📄 `.babelrc` |
+| 📄 `.editorconfig` |
+
+</details>
+
+---
+
+<details>
+            <summary>Listed directory src • **8** results</summary>
+        
+| Name |
+|-------|
+| 📄 `index.ts` |
+| 📁 `domains` |
+| 📁 `prisma` |
+| 📁 `docs` |
+| 📁 `types` |
+| 📁 `services` |
+| 📁 `middlewares` |
+| 📄 `.DS_Store` |
+
+</details>
+
+---
+
+Perfect! So your migrations are indeed in `src/prisma/migrations/`. The paths are correct, but let me check if there might be another issue.
+
+Let me see what your recent commits changed:
+
+---
+
 
 
 ---

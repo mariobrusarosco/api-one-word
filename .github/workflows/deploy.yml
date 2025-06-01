@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - src/prisma/migrations/**
+      - src/prisma/schema.prisma
     branches:
       - main
 
