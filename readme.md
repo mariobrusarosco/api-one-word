@@ -51,6 +51,12 @@ Before you begin, make sure you have the following installed:
 yarn
 ```
 
+- Build the image:
+
+  ```bash
+  docker-compose build
+  ```
+
 - Setup Environment Variables:
   // TODO
 
@@ -58,6 +64,12 @@ yarn
 
 ```bash
 yarn dev
+```
+
+- Run the project:
+
+```bash
+docker-compose up -d
 ```
 
 Now, the **API** is exposed on _http://localhost:3000_
