@@ -1,0 +1,29 @@
+name: Deploy Migrations to Demo
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/prisma/migrations/**'
+      - 'src/prisma/schema.prisma'
+      - 'prisma/migrations/**'
+      - 'prisma/schema.prisma'
+
+jobs:
+  deploy-migrations:
+    name: Deploy Migrations to Demo Environment
+    runs-on: ubuntu-latest
+    environment: demo
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+      - name: Install dependencies
+        run: npm install
+      - name: Apply all pending migrations to the database
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
