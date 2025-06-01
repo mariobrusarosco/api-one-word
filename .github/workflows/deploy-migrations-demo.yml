@@ -1,14 +1,12 @@
 name: Deploy Migrations to Demo
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
     paths:
-      - 'src/prisma/migrations/**'
-      - 'src/prisma/schema.prisma'
       - 'prisma/migrations/**'
-      - 'prisma/schema.prisma'
 
 jobs:
   deploy-migrations:
