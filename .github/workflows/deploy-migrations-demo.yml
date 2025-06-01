@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - 'prisma/migrations/**'
+      - 'src/prisma/migrations/**'
 
 jobs:
   deploy-migrations:
