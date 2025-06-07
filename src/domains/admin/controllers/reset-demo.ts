@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
+import jwt from 'jsonwebtoken'
 
 export async function resetDemo(req: Request, res: Response) {
   // 1. Validate environment
@@ -14,7 +15,7 @@ export async function resetDemo(req: Request, res: Response) {
   const authHeader = req.headers.authorization
   const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null
 
-  if (!token || token !== process.env.DEMO_RESET_TOKEN) {
+  if (!token || !jwt.verify(token, process.env.JWT_SECRET as string)) {
     return res.status(401).json({
       success: false,
       error: 'Invalid or missing reset token'
