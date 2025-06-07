@@ -14,8 +14,7 @@
     "seed": "ts-node-dev -r tsconfig-paths/register ./src/prisma/seed.ts",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org mario-79 --project one-word ./dist && sentry-cli sourcemaps upload --org mario-79 --project one-word ./dist",
     "db:push": "prisma db push --schema=./src/prisma/schema.prisma",
-    "db:migrate": "prisma migrate dev --schema=./src/prisma/schema.prisma",
-    "demo:reset": "ts-node -r tsconfig-paths/register scripts/reset-demo.ts"
+    "db:migrate": "prisma migrate dev --schema=./src/prisma/schema.prisma"
   },
   "prisma": {
     "schema": "src/prisma/schema.prisma"

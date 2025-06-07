@@ -1,37 +1,71 @@
 import { Request, Response } from 'express'
-import { exec } from 'child_process'
-import { promisify } from 'util'
-
-const execAsync = promisify(exec)
+import { PrismaClient } from '@prisma/client'
 
 export async function resetDemo(req: Request, res: Response) {
+  // 1. Validate environment
   if (process.env.NODE_ENV !== 'demo') {
-    return res.status(403).json({ 
-      success: false, 
-      error: 'This endpoint is only available in demo environment' 
+    return res.status(403).json({
+      success: false,
+      error: 'This endpoint is only available in demo environment'
+    })
+  }
+
+  // 2. Validate token
+  const authHeader = req.headers.authorization
+  const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null
+
+  if (!token || token !== process.env.DEMO_RESET_TOKEN) {
+    return res.status(401).json({
+      success: false,
+      error: 'Invalid or missing reset token'
     })
   }
 
   try {
     console.log('🚀 Starting demo reset via API...')
-    
-    const { stdout, stderr } = await execAsync('cross-env NODE_ENV=demo yarn demo:reset', {
-      env: { ...process.env, RESET_TOKEN: process.env.DEMO_RESET_TOKEN }
-    })
-    
-    if (stderr) console.error('Reset stderr:', stderr)
-    
+    const prisma = new PrismaClient()
+
+    // 1. Connect to the database
+    await prisma.$connect()
+
+    // 2. Reset data (order matters due to foreign key constraints)
+    console.log('🧹 Cleaning up existing data...')
+    await prisma.$transaction([
+      prisma.tableSeat.deleteMany(),
+      prisma.channel.deleteMany(),
+      prisma.table.deleteMany(),
+      prisma.member.deleteMany()
+    ])
+
+    // 3. Run seed
+    console.log('🌱 Seeding demo data...')
+
+    /*
+    This PostgreSQL query is a safety measure that terminates all other active database connections except the current one (that's what pid <> pg_backend_pid() ensures). Here's why it's useful:
+
+    When running database operations like seeding, having multiple active connections can cause conflicts
+    Sometimes connections might hang or remain open from previous operations
+    */
+    await prisma.$executeRaw`SELECT pg_terminate_backend(pg_stat_activity.pid)
+      FROM pg_stat_activity
+      WHERE pg_stat_activity.datname = current_database()
+        AND pid <> pg_backend_pid();`
+
+    await import('@/prisma/seed')
+
+    await prisma.$disconnect()
+
     console.log('✅ Demo reset successful')
-    res.status(200).json({ 
-      success: true, 
+    res.status(200).json({
+      success: true,
       message: 'Demo environment reset successfully',
       timestamp: new Date().toISOString()
     })
   } catch (error: any) {
     console.error(`[ADMIN - RESET DEMO] ${error}`)
-    
-    res.status(500).json({ 
-      success: false, 
+
+    res.status(500).json({
+      success: false,
       error: 'Failed to reset demo environment',
       details: process.env.NODE_ENV === 'demo' ? error.message : undefined
     })
