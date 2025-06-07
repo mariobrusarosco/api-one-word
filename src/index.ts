@@ -16,7 +16,7 @@ import AuthenticationRouting from '@/domains/auth/routes'
 import MemberRouting from '@/domains/member/routes'
 import AdminRouting from '@/domains/admin/routes'
 import Profiling from '@/services/profiling'
-import { healthCheck } from '@/domains/health'
+import HealthRouting from '@/domains/health/routes'
 
 // TODO Change to ESM import
 const cors = require('cors')
@@ -38,10 +38,6 @@ app.use(cookieParser() as any)
 app.use(express.json())
 app.use(Profiling.middleware)
 
-app.get('/api/v1/health', (_req, res) => {
-  healthCheck(_req, res)
-})
-
 console.log('process.env.API_VERSION', process.env.API_VERSION)
 // Routing
 TableRouting(app)
@@ -49,8 +45,8 @@ ChannelRouting(app)
 MessageRouting(app)
 AuthenticationRouting(app)
 MemberRouting(app)
-AdminRouting(app) // This will handle the /api/v1/admin prefix internally
-
+AdminRouting(app)
+HealthRouting(app)
 // Sentry.setupExpressErrorHandler(app)
 
 async function startServers() {
