@@ -26,7 +26,10 @@ const socketAdmin = express()
 socketAdmin.use(express.static('./node_modules/@socket.io/admin-ui/ui/dist'))
 socketAdmin.listen('5000')
 
-// Middlewares
+// Sentry request handler must be the first middleware
+app.use(Sentry.Handlers.requestHandler());
+
+// Regular middlewares
 app.use(
   cors({
     origin: process.env.ACCESS_CONTROL_ALLOW_ORIGIN,
@@ -47,7 +50,19 @@ AuthenticationRouting(app)
 MemberRouting(app)
 AdminRouting(app)
 HealthRouting(app)
-// Sentry.setupExpressErrorHandler(app)
+
+// The error handler must be registered before any other error middleware and after all controllers
+app.use(Sentry.Handlers.errorHandler());
+
+// Optional fallthrough error handler
+app.use(function onError(err: Error, req: express.Request, res: express.Response, next: express.NextFunction) {
+  res.statusCode = 500;
+  res.json({
+    status: 'error',
+    message: err.message,
+    stack: process.env.NODE_ENV === 'production' ? '🥞' : err.stack
+  });
+});
 
 async function startServers() {
   const server = startWebServer(app)
