@@ -5,7 +5,7 @@ import { HealthController } from '@/domains/health/controllers'
 const HealthRouting = (app: Express) => {
   const healthRouter = express.Router()
 
-  healthRouter.get('/health', HealthController.getHealthStatus)
+  healthRouter.get('/', HealthController.getHealthStatus)
 
   app.use(`${process.env.API_VERSION}/health`, healthRouter)
 }
