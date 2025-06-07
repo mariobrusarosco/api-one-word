@@ -2,7 +2,7 @@
 import './services/profiling/sentry-instrument'
 import 'dotenv/config'
 
-const Sentry = require('@sentry/node')
+import * as Sentry from '@sentry/node'
 import express from 'express'
 import cookieParser from 'cookie-parser'
 import TableRouting from '@/domains/table/routes'
@@ -27,7 +27,6 @@ socketAdmin.use(express.static('./node_modules/@socket.io/admin-ui/ui/dist'))
 socketAdmin.listen('5000')
 
 // Sentry request handler must be the first middleware
-app.use(Sentry.Handlers.requestHandler());
 
 // Regular middlewares
 app.use(
@@ -52,17 +51,22 @@ AdminRouting(app)
 HealthRouting(app)
 
 // The error handler must be registered before any other error middleware and after all controllers
-app.use(Sentry.Handlers.errorHandler());
+app.use(Sentry.Handlers.errorHandler())
 
 // Optional fallthrough error handler
-app.use(function onError(err: Error, req: express.Request, res: express.Response, next: express.NextFunction) {
-  res.statusCode = 500;
+app.use(function onError(
+  err: Error,
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  res.statusCode = 500
   res.json({
     status: 'error',
     message: err.message,
     stack: process.env.NODE_ENV === 'production' ? '🥞' : err.stack
-  });
-});
+  })
+})
 
 async function startServers() {
   const server = startWebServer(app)

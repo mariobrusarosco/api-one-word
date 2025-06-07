@@ -18,9 +18,13 @@ export class GameSocket {
 
       console.log('[SOCKET]', user.username, ' has joined game ', gameId)
 
-      await updateGameParticipants(this.socketServer, gameId)
+      const allParticipants = await updateGameParticipants(this.socketServer, gameId)
 
-      this.socketServer.to(gameId).emit(SocketEvents.JOIN_GAME, { gameId, ...user })
+      this.socketServer.to(gameId).emit(SocketEvents.JOIN_GAME, {
+        gameId,
+        joined: user,
+        participants: allParticipants
+      })
     })
   }
 
