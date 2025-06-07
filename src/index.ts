@@ -16,6 +16,7 @@ import AuthenticationRouting from '@/domains/auth/routes'
 import MemberRouting from '@/domains/member/routes'
 import AdminRouting from '@/domains/admin/routes'
 import Profiling from '@/services/profiling'
+import { healthCheck } from '@/domains/health'
 
 // TODO Change to ESM import
 const cors = require('cors')
@@ -38,8 +39,7 @@ app.use(express.json())
 app.use(Profiling.middleware)
 
 app.get('/api/v1/health', (_req, res) => {
-  const env = (process.env.NODE_ENV || 'development').toUpperCase()
-  res.json({ app: `One Word ${env}` })
+  healthCheck(_req, res)
 })
 
 console.log('process.env.API_VERSION', process.env.API_VERSION)
