@@ -23,7 +23,7 @@ export class GameSocket {
       this.socketServer.to(gameId).emit(SocketEvents.JOIN_GAME, {
         gameId,
         joined: user,
-        participants: allParticipants
+        allParticipants
       })
     })
   }
