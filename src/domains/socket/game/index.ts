@@ -8,6 +8,24 @@ export class GameSocket {
   constructor(private socketServer: Server) {
     this.socketServer = socketServer
   }
+  onConnection(socket: ISocketUser) {
+    socket.on('disconnect', async () => {
+      const user = socket.data.user
+      const gameId = socket.data.gameId as string
+
+      if (gameId) {
+        socket.leave(gameId)
+        await updateGameParticipants(this.socketServer, gameId)
+        const allParticipants = await updateGameParticipants(this.socketServer, gameId)
+        this.socketServer.to(gameId).emit(SocketEvents.LEAVE_GAME, {
+          gameId,
+          left: user,
+          allParticipants
+        })
+        console.log('[SOCKET]', user.username, ' has left game')
+      }
+    })
+  }
 
   joinGame(socket: ISocketUser) {
     socket.on(SocketEvents.JOIN_GAME, async ({ gameId }: { gameId: string }) => {
@@ -36,9 +54,13 @@ export class GameSocket {
       console.log('[SOCKET]', user.username, ' has left game ', gameId)
       socket.leave(gameId)
 
-      await updateGameParticipants(this.socketServer, gameId)
+      const allParticipants = await updateGameParticipants(this.socketServer, gameId)
 
-      this.socketServer.to(gameId).emit(SocketEvents.LEAVE_GAME, { gameId, user })
+      this.socketServer.to(gameId).emit(SocketEvents.LEAVE_GAME, {
+        gameId,
+        left: user,
+        allParticipants
+      })
     })
   }
 
@@ -54,6 +76,7 @@ export class GameSocket {
   }
 
   setupHandlers(socket: ISocketUser) {
+    this.onConnection(socket)
     this.joinGame(socket)
     this.leaveGame(socket)
     this.updateGame(socket)
